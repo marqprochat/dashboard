@@ -344,6 +344,15 @@
       box-shadow: var(--shadow);
     }
 
+    .filter-sep {
+      align-self: center;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 0 2px;
+      margin-top: 14px;
+    }
+
     .fg {
       display: flex;
       flex-direction: column;
@@ -805,13 +814,24 @@
           <option value="">Todos</option>
         </select>
       </div>
-      <div class="fg"><label>Mês</label>
-        <select id="f-month" onchange="renderAll()">
+      <div class="fg"><label>Mês De</label>
+        <select id="f-month-start" onchange="renderAll()">
           <option value="">Todos</option>
         </select>
       </div>
-      <div class="fg"><label>Ano</label>
-        <select id="f-year" onchange="renderAll()">
+      <div class="fg"><label>Ano De</label>
+        <select id="f-year-start" onchange="renderAll()">
+          <option value="">Todos</option>
+        </select>
+      </div>
+      <div class="filter-sep">até</div>
+      <div class="fg"><label>Mês Até</label>
+        <select id="f-month-end" onchange="renderAll()">
+          <option value="">Todos</option>
+        </select>
+      </div>
+      <div class="fg"><label>Ano Até</label>
+        <select id="f-year-end" onchange="renderAll()">
           <option value="">Todos</option>
         </select>
       </div>
@@ -1177,7 +1197,7 @@
       setStatus(msg, '#6ee7b7');
       document.getElementById('filters').style.display = 'flex';
       document.getElementById('last-updated').textContent = 'Atualizado: ' + new Date().toLocaleTimeString('pt-BR');
-      populateFilters();
+      populateFilters(true);
       renderAll();
     }
     function setStatus(t, c) { document.getElementById('stxt').textContent = t; document.getElementById('sdot').style.background = c; }
@@ -1210,16 +1230,37 @@
     }
 
     // ─── FILTERS ─────────────────────────────────────────────────
-    function populateFilters() {
+    const NOW_MONTH = new Date().getMonth() + 1; // 1-12
+    const NOW_YEAR = new Date().getFullYear();
+
+    function populateFilters(setDefaults) {
       const units = [...new Set(rawData.map(r => r.unit).filter(Boolean))].sort();
       const dentists = [...new Set(rawData.map(r => r.dentist))].sort();
       const months = [...new Set(rawData.map(r => parsePeriodo(r.periodo).mes).filter(m => m > 0))].sort((a, b) => a - b);
       const years = [...new Set(rawData.map(r => parsePeriodo(r.periodo).ano).filter(y => y > 0))].sort((a, b) => a - b);
 
+      const monthItems = months.map(m => ({ v: String(m), l: MONTH_NAMES[m] }));
+      const yearItems = years.map(y => ({ v: String(y), l: String(y) }));
+
       fillSel('f-unit', units.map(v => ({ v, l: v })), 'Todas');
       fillSel('f-dent', dentists.map(v => ({ v, l: v })), 'Todos');
-      fillSel('f-month', months.map(m => ({ v: String(m), l: MONTH_NAMES[m] })), 'Todos');
-      fillSel('f-year', years.map(y => ({ v: String(y), l: String(y) })), 'Todos');
+      fillSel('f-month-start', monthItems, 'Todos');
+      fillSel('f-year-start', yearItems, 'Todos');
+      fillSel('f-month-end', monthItems, 'Todos');
+      fillSel('f-year-end', yearItems, 'Todos');
+
+      // Define padrão: mês e ano atuais (se existirem nos dados)
+      if (setDefaults) {
+        const ms = String(NOW_MONTH), ys = String(NOW_YEAR);
+        if (months.includes(NOW_MONTH)) {
+          document.getElementById('f-month-start').value = ms;
+          document.getElementById('f-month-end').value = ms;
+        }
+        if (years.includes(NOW_YEAR)) {
+          document.getElementById('f-year-start').value = ys;
+          document.getElementById('f-year-end').value = ys;
+        }
+      }
 
       document.getElementById('pill-c').textContent = new Set(rawData.filter(r => specOf(r) === 'clinico').map(r => r.dentist)).size;
       document.getElementById('pill-o').textContent = new Set(rawData.filter(r => specOf(r) === 'ortho').map(r => r.dentist)).size;
@@ -1229,29 +1270,36 @@
       const cur = s.value;
       s.innerHTML = `<option value="">${ph}</option>`;
       items.forEach(({ v, l }) => s.innerHTML += `<option value="${v}">${l}</option>`);
-      if (cur) s.value = cur; // preserva seleção ao recarregar
+      if (cur) s.value = cur;
     }
     function getFiltered() {
       const spec = document.getElementById('f-spec').value;
       const unit = document.getElementById('f-unit').value;
       const dent = document.getElementById('f-dent').value;
-      const fMonth = document.getElementById('f-month').value;
-      const fYear = document.getElementById('f-year').value;
+      const mStart = document.getElementById('f-month-start').value;
+      const yStart = document.getElementById('f-year-start').value;
+      const mEnd = document.getElementById('f-month-end').value;
+      const yEnd = document.getElementById('f-year-end').value;
+
+      // Monta chaves de início/fim para comparação de range
+      const startKey = (yStart || mStart) ? `${yStart || '0000'}-${(mStart || '1').padStart(2, '0')}` : '';
+      const endKey = (yEnd || mEnd) ? `${yEnd || '9999'}-${(mEnd || '12').padStart(2, '0')}` : '';
+
       return rawData.filter(r => {
         if (spec && specOf(r) !== spec) return false;
         if (unit && r.unit !== unit) return false;
         if (dent && r.dentist !== dent) return false;
-        if (fMonth || fYear) {
-          const { mes, ano } = parsePeriodo(r.periodo);
-          if (fMonth && mes !== parseInt(fMonth, 10)) return false;
-          if (fYear && ano !== parseInt(fYear, 10)) return false;
+        if (startKey || endKey) {
+          const k = pKey(r.periodo);
+          if (startKey && k < startKey) return false;
+          if (endKey && k > endKey) return false;
         }
         return true;
       });
     }
     function clearFilters() {
-      ['f-spec', 'f-unit', 'f-dent', 'f-month', 'f-year'].forEach(id => document.getElementById(id).value = '');
-      populateFilters(); renderAll();
+      ['f-spec', 'f-unit', 'f-dent', 'f-month-start', 'f-year-start', 'f-month-end', 'f-year-end'].forEach(id => document.getElementById(id).value = '');
+      populateFilters(false); renderAll();
     }
 
     // ─── METRICS ─────────────────────────────────────────────────
