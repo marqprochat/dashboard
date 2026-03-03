@@ -1,376 +1,1109 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dentalkids · Dashboard de Produção</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg: #eef2f7;
-  --surface: #ffffff;
-  --surface2: #e4edf7;
-  --primary: #0a4f7f;
-  --accent: #00b4d8;
-  --accent2: #48cae4;
-  --green: #2ec4b6;
-  --orange: #f77f00;
-  --purple: #6b21a8;
-  --text: #1a2940;
-  --muted: #6b84a0;
-  --border: #cfdcea;
-  --radius: 14px;
-  --shadow: 0 2px 16px rgba(10,79,127,0.07);
-  --clinico: #0a4f7f;
-  --clinico-lt: #ddeeff;
-  --ortho: #6b21a8;
-  --ortho-lt: #ede9fe;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dentalkids · Dashboard de Produção</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #eef2f7;
+      --surface: #ffffff;
+      --surface2: #e4edf7;
+      --primary: #0a4f7f;
+      --accent: #00b4d8;
+      --accent2: #48cae4;
+      --green: #2ec4b6;
+      --orange: #f77f00;
+      --purple: #6b21a8;
+      --text: #1a2940;
+      --muted: #6b84a0;
+      --border: #cfdcea;
+      --radius: 14px;
+      --shadow: 0 2px 16px rgba(10, 79, 127, 0.07);
+      --clinico: #0a4f7f;
+      --clinico-lt: #ddeeff;
+      --ortho: #6b21a8;
+      --ortho-lt: #ede9fe;
+    }
 
-header { background: var(--primary); padding: 0 28px; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 200; box-shadow: 0 2px 20px rgba(10,79,127,0.35); }
-.logo { display: flex; align-items: center; gap: 10px; }
-.logo-icon { width: 34px; height: 34px; background: var(--accent); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; }
-.logo-text { color: #fff; font-family: Arial, sans-serif; font-size: 17px; font-weight: 800; }
-.logo-sub { color: var(--accent2); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; }
-.header-right { display: flex; align-items: center; gap: 14px; }
-#status-pill { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: #fff; }
-.dot { width: 7px; height: 7px; border-radius: 50%; }
-#last-updated { font-size: 11px; color: var(--accent2); }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-.tabs-bar { background: var(--primary); padding: 0 28px; display: flex; gap: 2px; border-top: 1px solid rgba(255,255,255,0.09); }
-.tab-btn { padding: 9px 20px; border: none; border-bottom: 3px solid transparent; background: transparent; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.45); transition: all 0.2s; white-space: nowrap; }
-.tab-btn:hover { color: rgba(255,255,255,0.8); }
-.tab-btn.active { color: #fff; }
-.tab-geral.active   { border-bottom-color: var(--accent2); }
-.tab-clinico.active { border-bottom-color: #60c8f0; }
-.tab-ortho.active   { border-bottom-color: #c084fc; }
-.tab-pill { display: inline-block; margin-left: 5px; background: rgba(255,255,255,0.14); border-radius: 10px; padding: 1px 7px; font-size: 10px; font-weight: 700; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
 
-main { padding: 22px 28px; max-width: 1380px; margin: 0 auto; }
-.tab-content { display: none; }
-.tab-content.active { display: block; animation: fadeIn 0.2s ease; }
-@keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
+    header {
+      background: var(--primary);
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      box-shadow: 0 2px 20px rgba(10, 79, 127, 0.35);
+    }
 
-/* ── SYNC PANEL ── */
-.sync-panel {
-  background: var(--surface); border-radius: var(--radius);
-  border: 1px solid var(--border); box-shadow: var(--shadow);
-  margin-bottom: 18px; padding: 20px 24px;
-  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
-}
-.sync-info { display: flex; align-items: center; gap: 12px; }
-.sync-icon { width: 42px; height: 42px; background: linear-gradient(135deg, var(--accent), var(--green)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-.sync-text h3 { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
-.sync-text p { font-size: 12px; color: var(--muted); }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-.btn { background: var(--primary); color: #fff; border: none; border-radius: 9px; padding: 9px 16px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; white-space: nowrap; }
-.btn:hover { background: #0c5f9a; }
-.btn:active { transform: scale(0.97); }
-.btn-sync { background: linear-gradient(135deg, var(--primary), var(--accent)); padding: 11px 24px; font-size: 14px; border-radius: 10px; display: flex; align-items: center; gap: 8px; }
-.btn-sync:hover { background: linear-gradient(135deg, #0c5f9a, #0096c7); }
-.btn-sync .sync-spinner { display: none; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: rot 0.8s linear infinite; }
-.btn-sync.loading .sync-spinner { display: inline-block; }
-.btn-sync.loading .sync-label { display: none; }
-.btn-ghost { background: transparent; color: var(--primary); border: 1.5px solid var(--border); }
-.btn-ghost:hover { background: var(--surface2); }
+    .logo-icon {
+      width: 34px;
+      height: 34px;
+      background: var(--accent);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+    }
 
-/* ── ERROR BOX ── */
-.error-box { display:none; background: #fff5f5; border: 1.5px solid #fca5a5; border-radius: 10px; padding: 14px 18px; margin-top: 12px; font-size: 12px; line-height: 1.7; color: #7f1d1d; width: 100%; }
-.error-box strong { color: #dc2626; }
-.error-box .err-steps { margin-top: 8px; padding-left: 16px; }
-.error-box .err-steps li { margin-bottom: 3px; }
+    .logo-text {
+      color: #fff;
+      font-family: Arial, sans-serif;
+      font-size: 17px;
+      font-weight: 800;
+    }
 
-/* FILTERS */
-.filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; align-items: flex-end; background: var(--surface); border-radius: var(--radius); padding: 14px 20px; border: 1px solid var(--border); box-shadow: var(--shadow); }
-.fg { display: flex; flex-direction: column; gap: 4px; }
-.fg label { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.9px; }
-select, input[type="month"] { border: 1.5px solid var(--border); border-radius: 9px; padding: 7px 11px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text); background: var(--surface); outline: none; cursor: pointer; transition: border-color 0.2s; }
-select:focus { border-color: var(--accent); }
+    .logo-sub {
+      color: var(--accent2);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
 
-/* KPIs */
-.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 12px; margin-bottom: 18px; }
-.kpi { background: var(--surface); border-radius: var(--radius); padding: 18px 20px; box-shadow: var(--shadow); border: 1px solid var(--border); position: relative; overflow: hidden; transition: transform 0.18s, box-shadow 0.18s; }
-.kpi:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(10,79,127,0.12); }
-.kpi::after { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:14px 14px 0 0; }
-.kpi.blue::after   { background: linear-gradient(90deg,#0a4f7f,#00b4d8); }
-.kpi.green::after  { background: linear-gradient(90deg,#2ec4b6,#80ffdb); }
-.kpi.orange::after { background: linear-gradient(90deg,#f77f00,#fcbf49); }
-.kpi.purple::after { background: linear-gradient(90deg,#6b21a8,#c084fc); }
-.kpi.teal::after   { background: linear-gradient(90deg,#0096c7,#48cae4); }
-.kpi.red::after    { background: linear-gradient(90deg,#dc2626,#fb923c); }
-.kpi.indigo::after { background: linear-gradient(90deg,#3730a3,#818cf8); }
-.kpi.rose::after   { background: linear-gradient(90deg,#be185d,#fb7185); }
-.kpi-lbl { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 7px; }
-.kpi-val { font-size: 22px; font-weight: 800; color: var(--text); line-height: 1; font-family: Arial, sans-serif; margin-bottom: 3px; }
-.kpi-sub { font-size: 11px; color: var(--muted); }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
 
-.sb { display:inline-flex; align-items:center; gap:4px; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:700; }
-.sb.c { background: var(--clinico-lt); color: var(--clinico); }
-.sb.o { background: var(--ortho-lt);   color: var(--ortho); }
+    #status-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 12px;
+      color: #fff;
+    }
 
-.split { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
-.sp-panel { background:var(--surface); border-radius:var(--radius); border:1px solid var(--border); box-shadow:var(--shadow); overflow:hidden; }
-.sp-head { padding:12px 18px; display:flex; align-items:center; gap:9px; border-bottom:1px solid var(--border); }
-.sp-head.c { background: var(--clinico-lt); }
-.sp-head.o { background: var(--ortho-lt); }
-.sp-head h3 { font-size:13px; font-weight:700; }
-.sp-head.c h3 { color: var(--clinico); }
-.sp-head.o h3 { color: var(--ortho); }
-.sp-body { padding:14px 18px; display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
-.mk-lbl { font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.7px; margin-bottom:2px; }
-.mk-val { font-size:17px; font-weight:800; font-family: Arial, sans-serif; }
-.mk-val.c { color: var(--clinico); }
-.mk-val.o { color: var(--ortho); }
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
 
-.chart-grid { display:grid; grid-template-columns:2fr 1fr; gap:14px; margin-bottom:14px; }
-.cc { background:var(--surface); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); border:1px solid var(--border); }
-.cc.full { grid-column:1/-1; }
-.cc-title { font-size:13px; font-weight:700; margin-bottom:2px; }
-.cc-sub { font-size:11px; color:var(--muted); margin-bottom:16px; }
+    #last-updated {
+      font-size: 11px;
+      color: var(--accent2);
+    }
 
-.sec { font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1.2px; margin:20px 0 10px; display:flex; align-items:center; gap:8px; }
-.sec::after { content:''; flex:1; height:1px; background:var(--border); }
+    .tabs-bar {
+      background: var(--primary);
+      padding: 0 28px;
+      display: flex;
+      gap: 2px;
+      border-top: 1px solid rgba(255, 255, 255, 0.09);
+    }
 
-.tc { background:var(--surface); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); border:1px solid var(--border); margin-bottom:14px; overflow-x:auto; }
-table { width:100%; border-collapse:collapse; min-width:700px; }
-thead tr { border-bottom:2px solid var(--border); }
-th { text-align:left; font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; padding:7px 10px; white-space:nowrap; }
-td { padding:10px 10px; font-size:12px; border-bottom:1px solid var(--surface2); white-space:nowrap; }
-tr:last-child td { border-bottom:none; }
-tbody tr:hover td { background:#f5f9ff; }
-.bm { height:5px; border-radius:3px; min-width:3px; }
-.bm-g { background: linear-gradient(90deg,var(--accent),var(--green)); }
-.bm-c { background: linear-gradient(90deg,var(--clinico),#1d9bd1); }
-.bm-o { background: linear-gradient(90deg,var(--ortho),#c084fc); }
+    .tab-btn {
+      padding: 9px 20px;
+      border: none;
+      border-bottom: 3px solid transparent;
+      background: transparent;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.45);
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
 
-.empty { text-align:center; padding:44px 20px; color:var(--muted); }
-.empty .ic { font-size:40px; margin-bottom:8px; }
-.empty h3 { font-size:14px; font-weight:600; color:var(--text); margin-bottom:5px; }
-.empty p { font-size:12px; line-height:1.6; }
-.loading { display:flex; align-items:center; justify-content:center; gap:10px; padding:40px; color:var(--muted); font-size:13px; }
-.spin { width:18px; height:18px; border:2px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:rot .8s linear infinite; }
-@keyframes rot { to { transform:rotate(360deg); } }
+    .tab-btn:hover {
+      color: rgba(255, 255, 255, 0.8);
+    }
 
-@media (max-width:860px) {
-  .chart-grid,.split { grid-template-columns:1fr; }
-  main { padding:14px; }
-  header,.tabs-bar { padding-left:14px; padding-right:14px; }
-}
-</style>
+    .tab-btn.active {
+      color: #fff;
+    }
+
+    .tab-geral.active {
+      border-bottom-color: var(--accent2);
+    }
+
+    .tab-clinico.active {
+      border-bottom-color: #60c8f0;
+    }
+
+    .tab-ortho.active {
+      border-bottom-color: #c084fc;
+    }
+
+    .tab-pill {
+      display: inline-block;
+      margin-left: 5px;
+      background: rgba(255, 255, 255, 0.14);
+      border-radius: 10px;
+      padding: 1px 7px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    main {
+      padding: 22px 28px;
+      max-width: 1380px;
+      margin: 0 auto;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    /* ── SYNC PANEL ── */
+    .sync-panel {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .sync-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sync-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, var(--accent), var(--green));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .sync-text h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .sync-text p {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      padding: 9px 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: #0c5f9a;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-sync {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      padding: 11px 24px;
+      font-size: 14px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-sync:hover {
+      background: linear-gradient(135deg, #0c5f9a, #0096c7);
+    }
+
+    .btn-sync .sync-spinner {
+      display: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: rot 0.8s linear infinite;
+    }
+
+    .btn-sync.loading .sync-spinner {
+      display: inline-block;
+    }
+
+    .btn-sync.loading .sync-label {
+      display: none;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--primary);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      background: var(--surface2);
+    }
+
+    /* ── ERROR BOX ── */
+    .error-box {
+      display: none;
+      background: #fff5f5;
+      border: 1.5px solid #fca5a5;
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-top: 12px;
+      font-size: 12px;
+      line-height: 1.7;
+      color: #7f1d1d;
+      width: 100%;
+    }
+
+    .error-box strong {
+      color: #dc2626;
+    }
+
+    .error-box .err-steps {
+      margin-top: 8px;
+      padding-left: 16px;
+    }
+
+    .error-box .err-steps li {
+      margin-bottom: 3px;
+    }
+
+    /* FILTERS */
+    .filters {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+      align-items: flex-end;
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 14px 20px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .fg {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .fg label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+    }
+
+    select,
+    input[type="month"] {
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      padding: 7px 11px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      color: var(--text);
+      background: var(--surface);
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    select:focus {
+      border-color: var(--accent);
+    }
+
+    /* KPIs */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .kpi {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.18s, box-shadow 0.18s;
+    }
+
+    .kpi:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(10, 79, 127, 0.12);
+    }
+
+    .kpi::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      border-radius: 14px 14px 0 0;
+    }
+
+    .kpi.blue::after {
+      background: linear-gradient(90deg, #0a4f7f, #00b4d8);
+    }
+
+    .kpi.green::after {
+      background: linear-gradient(90deg, #2ec4b6, #80ffdb);
+    }
+
+    .kpi.orange::after {
+      background: linear-gradient(90deg, #f77f00, #fcbf49);
+    }
+
+    .kpi.purple::after {
+      background: linear-gradient(90deg, #6b21a8, #c084fc);
+    }
+
+    .kpi.teal::after {
+      background: linear-gradient(90deg, #0096c7, #48cae4);
+    }
+
+    .kpi.red::after {
+      background: linear-gradient(90deg, #dc2626, #fb923c);
+    }
+
+    .kpi.indigo::after {
+      background: linear-gradient(90deg, #3730a3, #818cf8);
+    }
+
+    .kpi.rose::after {
+      background: linear-gradient(90deg, #be185d, #fb7185);
+    }
+
+    .kpi-lbl {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 7px;
+    }
+
+    .kpi-val {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1;
+      font-family: Arial, sans-serif;
+      margin-bottom: 3px;
+    }
+
+    .kpi-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .sb {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .sb.c {
+      background: var(--clinico-lt);
+      color: var(--clinico);
+    }
+
+    .sb.o {
+      background: var(--ortho-lt);
+      color: var(--ortho);
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .sp-panel {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .sp-head {
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sp-head.c {
+      background: var(--clinico-lt);
+    }
+
+    .sp-head.o {
+      background: var(--ortho-lt);
+    }
+
+    .sp-head h3 {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .sp-head.c h3 {
+      color: var(--clinico);
+    }
+
+    .sp-head.o h3 {
+      color: var(--ortho);
+    }
+
+    .sp-body {
+      padding: 14px 18px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .mk-lbl {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      margin-bottom: 2px;
+    }
+
+    .mk-val {
+      font-size: 17px;
+      font-weight: 800;
+      font-family: Arial, sans-serif;
+    }
+
+    .mk-val.c {
+      color: var(--clinico);
+    }
+
+    .mk-val.o {
+      color: var(--ortho);
+    }
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .cc {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .cc.full {
+      grid-column: 1/-1;
+    }
+
+    .cc-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .cc-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .sec {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      margin: 20px 0 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sec::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .tc {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      margin-bottom: 14px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+    }
+
+    thead tr {
+      border-bottom: 2px solid var(--border);
+    }
+
+    th {
+      text-align: left;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      padding: 7px 10px;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 10px 10px;
+      font-size: 12px;
+      border-bottom: 1px solid var(--surface2);
+      white-space: nowrap;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover td {
+      background: #f5f9ff;
+    }
+
+    .bm {
+      height: 5px;
+      border-radius: 3px;
+      min-width: 3px;
+    }
+
+    .bm-g {
+      background: linear-gradient(90deg, var(--accent), var(--green));
+    }
+
+    .bm-c {
+      background: linear-gradient(90deg, var(--clinico), #1d9bd1);
+    }
+
+    .bm-o {
+      background: linear-gradient(90deg, var(--ortho), #c084fc);
+    }
+
+    .empty {
+      text-align: center;
+      padding: 44px 20px;
+      color: var(--muted);
+    }
+
+    .empty .ic {
+      font-size: 40px;
+      margin-bottom: 8px;
+    }
+
+    .empty h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 5px;
+    }
+
+    .empty p {
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 40px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .spin {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: rot .8s linear infinite;
+    }
+
+    @keyframes rot {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @media (max-width:860px) {
+
+      .chart-grid,
+      .split {
+        grid-template-columns: 1fr;
+      }
+
+      main {
+        padding: 14px;
+      }
+
+      header,
+      .tabs-bar {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<header>
-  <div class="logo">
-    <div class="logo-icon">🦷</div>
-    <div>
-      <div class="logo-text">Dentalkids</div>
-      <div class="logo-sub">Dashboard de Produção</div>
-    </div>
-  </div>
-  <div class="header-right">
-    <span id="last-updated"></span>
-    <div id="status-pill">
-      <span class="dot" id="sdot" style="background:#94a3b8"></span>
-      <span id="stxt">Aguardando dados</span>
-    </div>
-  </div>
-</header>
-
-<div class="tabs-bar">
-  <button class="tab-btn tab-geral active"  onclick="switchTab('geral')">📊 Geral</button>
-  <button class="tab-btn tab-clinico"        onclick="switchTab('clinico')">🩺 Clínico <span class="tab-pill" id="pill-c">—</span></button>
-  <button class="tab-btn tab-ortho"          onclick="switchTab('ortho')">😁 Ortodontia <span class="tab-pill" id="pill-o">—</span></button>
-</div>
-
-<main>
-
-  <!-- ══ SYNC PANEL ══ -->
-  <div class="sync-panel">
-    <div class="sync-info">
-      <div class="sync-icon">📊</div>
-      <div class="sync-text">
-        <h3>Dados de Produção</h3>
-        <p>Clique no botão para buscar os dados atualizados da planilha</p>
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🦷</div>
+      <div>
+        <div class="logo-text">Dentalkids</div>
+        <div class="logo-sub">Dashboard de Produção</div>
       </div>
     </div>
-    <button class="btn btn-sync" id="btn-sync" onclick="loadData()">
-      <span class="sync-spinner"></span>
-      <span class="sync-label">🔄 Atualizar Dados</span>
-    </button>
-    <div id="error-box" class="error-box"></div>
+    <div class="header-right">
+      <span id="last-updated"></span>
+      <div id="status-pill">
+        <span class="dot" id="sdot" style="background:#94a3b8"></span>
+        <span id="stxt">Aguardando dados</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="tabs-bar">
+    <button class="tab-btn tab-geral active" onclick="switchTab('geral')">📊 Geral</button>
+    <button class="tab-btn tab-clinico" onclick="switchTab('clinico')">🩺 Clínico <span class="tab-pill"
+        id="pill-c">—</span></button>
+    <button class="tab-btn tab-ortho" onclick="switchTab('ortho')">😁 Ortodontia <span class="tab-pill"
+        id="pill-o">—</span></button>
   </div>
 
-  <!-- FILTERS -->
-  <div class="filters" id="filters" style="display:none">
-    <div class="fg"><label>Especialidade</label>
-      <select id="f-spec" onchange="renderAll()">
-        <option value="">Todas</option>
-        <option value="clinico">Clínico</option>
-        <option value="ortho">Ortodontia</option>
-      </select>
-    </div>
-    <div class="fg"><label>Unidade</label>
-      <select id="f-unit" onchange="renderAll()"><option value="">Todas</option></select>
-    </div>
-    <div class="fg"><label>Dentista</label>
-      <select id="f-dent" onchange="renderAll()"><option value="">Todos</option></select>
-    </div>
-    <div class="fg"><label>Período De</label>
-      <select id="f-start" onchange="renderAll()"><option value="">Início</option></select>
-    </div>
-    <div class="fg"><label>Período Até</label>
-      <select id="f-end" onchange="renderAll()"><option value="">Fim</option></select>
-    </div>
-    <div style="margin-left:auto;align-self:flex-end">
-      <button class="btn btn-ghost" onclick="clearFilters()">Limpar</button>
-    </div>
-  </div>
+  <main>
 
-  <!-- ══ TAB GERAL ══ -->
-  <div class="tab-content active" id="tab-geral">
-    <div class="kpi-grid">
-      <div class="kpi blue">   <div class="kpi-lbl">Produção Total</div>       <div class="kpi-val" id="g-prod">—</div>  <div class="kpi-sub">Todas especialidades</div></div>
-      <div class="kpi orange"> <div class="kpi-lbl">Prod. / Atendimento</div>  <div class="kpi-val" id="g-paten">—</div> <div class="kpi-sub">Ticket médio</div></div>
-      <div class="kpi green">  <div class="kpi-lbl">Prod. / Hora</div>         <div class="kpi-val" id="g-phora">—</div> <div class="kpi-sub">Eficiência horária</div></div>
-      <div class="kpi indigo"> <div class="kpi-lbl">Prod. / Dia</div>          <div class="kpi-val" id="g-pdia">—</div>  <div class="kpi-sub">Média por dia trabalhado</div></div>
-      <div class="kpi teal">   <div class="kpi-lbl">Atendimentos</div>         <div class="kpi-val" id="g-atend">—</div> <div class="kpi-sub">Total</div></div>
-      <div class="kpi rose">   <div class="kpi-lbl">Horas Trabalhadas</div>    <div class="kpi-val" id="g-horas">—</div> <div class="kpi-sub">Total acumulado</div></div>
-      <div class="kpi purple"> <div class="kpi-lbl">Dentistas Ativos</div>     <div class="kpi-val" id="g-dents">—</div> <div class="kpi-sub">No período</div></div>
-      <div class="kpi red">    <div class="kpi-lbl">Unidades</div>             <div class="kpi-val" id="g-units">—</div> <div class="kpi-sub">Com produção</div></div>
-    </div>
-    <div class="sec">Comparativo por Especialidade</div>
-    <div class="split">
-      <div class="sp-panel">
-        <div class="sp-head c"><span class="sb c">🩺 Clínico</span><h3>Resumo Clínico</h3></div>
-        <div class="sp-body">
-          <div><div class="mk-lbl">Produção</div>     <div class="mk-val c" id="cs-prod">—</div></div>
-          <div><div class="mk-lbl">/ Atendimento</div><div class="mk-val c" id="cs-pa">—</div></div>
-          <div><div class="mk-lbl">/ Hora</div>       <div class="mk-val c" id="cs-ph">—</div></div>
-          <div><div class="mk-lbl">/ Dia</div>        <div class="mk-val c" id="cs-pd">—</div></div>
+    <!-- ══ SYNC PANEL ══ -->
+    <div class="sync-panel">
+      <div class="sync-info">
+        <div class="sync-icon">📊</div>
+        <div class="sync-text">
+          <h3>Dados de Produção</h3>
+          <p>Clique no botão para buscar os dados atualizados da planilha</p>
         </div>
       </div>
-      <div class="sp-panel">
-        <div class="sp-head o"><span class="sb o">😁 Ortodontia</span><h3>Resumo Ortodontia</h3></div>
-        <div class="sp-body">
-          <div><div class="mk-lbl">Produção</div>     <div class="mk-val o" id="os-prod">—</div></div>
-          <div><div class="mk-lbl">/ Atendimento</div><div class="mk-val o" id="os-pa">—</div></div>
-          <div><div class="mk-lbl">/ Hora</div>       <div class="mk-val o" id="os-ph">—</div></div>
-          <div><div class="mk-lbl">/ Dia</div>        <div class="mk-val o" id="os-pd">—</div></div>
+      <button class="btn btn-sync" id="btn-sync" onclick="loadData()">
+        <span class="sync-spinner"></span>
+        <span class="sync-label">🔄 Atualizar Dados</span>
+      </button>
+      <div id="error-box" class="error-box"></div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filters" id="filters" style="display:none">
+      <div class="fg"><label>Especialidade</label>
+        <select id="f-spec" onchange="renderAll()">
+          <option value="">Todas</option>
+          <option value="clinico">Clínico</option>
+          <option value="ortho">Ortodontia</option>
+        </select>
+      </div>
+      <div class="fg"><label>Unidade</label>
+        <select id="f-unit" onchange="renderAll()">
+          <option value="">Todas</option>
+        </select>
+      </div>
+      <div class="fg"><label>Dentista</label>
+        <select id="f-dent" onchange="renderAll()">
+          <option value="">Todos</option>
+        </select>
+      </div>
+      <div class="fg"><label>Mês</label>
+        <select id="f-month" onchange="renderAll()">
+          <option value="">Todos</option>
+        </select>
+      </div>
+      <div class="fg"><label>Ano</label>
+        <select id="f-year" onchange="renderAll()">
+          <option value="">Todos</option>
+        </select>
+      </div>
+      <div style="margin-left:auto;align-self:flex-end">
+        <button class="btn btn-ghost" onclick="clearFilters()">Limpar</button>
+      </div>
+    </div>
+
+    <!-- ══ TAB GERAL ══ -->
+    <div class="tab-content active" id="tab-geral">
+      <div class="kpi-grid">
+        <div class="kpi blue">
+          <div class="kpi-lbl">Produção Total</div>
+          <div class="kpi-val" id="g-prod">—</div>
+          <div class="kpi-sub">Todas especialidades</div>
+        </div>
+        <div class="kpi orange">
+          <div class="kpi-lbl">Prod. / Atendimento</div>
+          <div class="kpi-val" id="g-paten">—</div>
+          <div class="kpi-sub">Ticket médio</div>
+        </div>
+        <div class="kpi green">
+          <div class="kpi-lbl">Prod. / Hora</div>
+          <div class="kpi-val" id="g-phora">—</div>
+          <div class="kpi-sub">Eficiência horária</div>
+        </div>
+        <div class="kpi indigo">
+          <div class="kpi-lbl">Prod. / Dia</div>
+          <div class="kpi-val" id="g-pdia">—</div>
+          <div class="kpi-sub">Média por dia trabalhado</div>
+        </div>
+        <div class="kpi teal">
+          <div class="kpi-lbl">Atendimentos</div>
+          <div class="kpi-val" id="g-atend">—</div>
+          <div class="kpi-sub">Total</div>
+        </div>
+        <div class="kpi rose">
+          <div class="kpi-lbl">Horas Trabalhadas</div>
+          <div class="kpi-val" id="g-horas">—</div>
+          <div class="kpi-sub">Total acumulado</div>
+        </div>
+        <div class="kpi purple">
+          <div class="kpi-lbl">Dentistas Ativos</div>
+          <div class="kpi-val" id="g-dents">—</div>
+          <div class="kpi-sub">No período</div>
+        </div>
+        <div class="kpi red">
+          <div class="kpi-lbl">Unidades</div>
+          <div class="kpi-val" id="g-units">—</div>
+          <div class="kpi-sub">Com produção</div>
+        </div>
+      </div>
+      <div class="sec">Comparativo por Especialidade</div>
+      <div class="split">
+        <div class="sp-panel">
+          <div class="sp-head c"><span class="sb c">🩺 Clínico</span>
+            <h3>Resumo Clínico</h3>
+          </div>
+          <div class="sp-body">
+            <div>
+              <div class="mk-lbl">Produção</div>
+              <div class="mk-val c" id="cs-prod">—</div>
+            </div>
+            <div>
+              <div class="mk-lbl">/ Atendimento</div>
+              <div class="mk-val c" id="cs-pa">—</div>
+            </div>
+            <div>
+              <div class="mk-lbl">/ Hora</div>
+              <div class="mk-val c" id="cs-ph">—</div>
+            </div>
+            <div>
+              <div class="mk-lbl">/ Dia</div>
+              <div class="mk-val c" id="cs-pd">—</div>
+            </div>
+          </div>
+        </div>
+        <div class="sp-panel">
+          <div class="sp-head o"><span class="sb o">😁 Ortodontia</span>
+            <h3>Resumo Ortodontia</h3>
+          </div>
+          <div class="sp-body">
+            <div>
+              <div class="mk-lbl">Produção</div>
+              <div class="mk-val o" id="os-prod">—</div>
+            </div>
+            <div>
+              <div class="mk-lbl">/ Atendimento</div>
+              <div class="mk-val o" id="os-pa">—</div>
+            </div>
+            <div>
+              <div class="mk-lbl">/ Hora</div>
+              <div class="mk-val o" id="os-ph">—</div>
+            </div>
+            <div>
+              <div class="mk-lbl">/ Dia</div>
+              <div class="mk-val o" id="os-pd">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="chart-grid">
+        <div class="cc">
+          <div class="cc-title">Evolução Mensal da Produção</div>
+          <div class="cc-sub">Clínico vs Ortodontia</div><canvas id="ch-g-mon" height="250"></canvas>
+        </div>
+        <div class="cc">
+          <div class="cc-title">Participação por Especialidade</div>
+          <div class="cc-sub">% da produção total</div><canvas id="ch-g-donut" height="250"></canvas>
+        </div>
+        <div class="cc full">
+          <div class="cc-title">Produção por Unidade</div>
+          <div class="cc-sub">Comparativo entre clínicas</div><canvas id="ch-g-unit" height="160"></canvas>
+        </div>
+      </div>
+      <div class="tc">
+        <div class="cc-title">Ranking Geral</div>
+        <div class="cc-sub" style="margin-bottom:14px">Todos os dentistas — ordenado por Prod./Dia</div>
+        <div id="tbl-g">
+          <div class="empty">
+            <div class="ic">📋</div>
+            <h3>Nenhum dado carregado</h3>
+            <p>Conecte sua planilha ou use os dados demo.</p>
+          </div>
         </div>
       </div>
     </div>
-    <div class="chart-grid">
-      <div class="cc"><div class="cc-title">Evolução Mensal da Produção</div><div class="cc-sub">Clínico vs Ortodontia</div><canvas id="ch-g-mon" height="250"></canvas></div>
-      <div class="cc"><div class="cc-title">Participação por Especialidade</div><div class="cc-sub">% da produção total</div><canvas id="ch-g-donut" height="250"></canvas></div>
-      <div class="cc full"><div class="cc-title">Produção por Unidade</div><div class="cc-sub">Comparativo entre clínicas</div><canvas id="ch-g-unit" height="160"></canvas></div>
-    </div>
-    <div class="tc">
-      <div class="cc-title">Ranking Geral</div>
-      <div class="cc-sub" style="margin-bottom:14px">Todos os dentistas — ordenado por Prod./Dia</div>
-      <div id="tbl-g"><div class="empty"><div class="ic">📋</div><h3>Nenhum dado carregado</h3><p>Conecte sua planilha ou use os dados demo.</p></div></div>
-    </div>
-  </div>
 
-  <!-- ══ TAB CLÍNICO ══ -->
-  <div class="tab-content" id="tab-clinico">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
-      <span class="sb c" style="font-size:13px;padding:4px 13px">🩺 Clínico</span>
-      <span style="font-size:12px;color:var(--muted)">Análise detalhada dos dentistas clínicos</span>
+    <!-- ══ TAB CLÍNICO ══ -->
+    <div class="tab-content" id="tab-clinico">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+        <span class="sb c" style="font-size:13px;padding:4px 13px">🩺 Clínico</span>
+        <span style="font-size:12px;color:var(--muted)">Análise detalhada dos dentistas clínicos</span>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi blue">
+          <div class="kpi-lbl">Produção Total</div>
+          <div class="kpi-val" id="c-prod">—</div>
+          <div class="kpi-sub">Clínicos no período</div>
+        </div>
+        <div class="kpi orange">
+          <div class="kpi-lbl">Prod. / Atendimento</div>
+          <div class="kpi-val" id="c-pa">—</div>
+          <div class="kpi-sub">Ticket médio</div>
+        </div>
+        <div class="kpi green">
+          <div class="kpi-lbl">Prod. / Hora</div>
+          <div class="kpi-val" id="c-ph">—</div>
+          <div class="kpi-sub">Eficiência horária</div>
+        </div>
+        <div class="kpi indigo">
+          <div class="kpi-lbl">Prod. / Dia</div>
+          <div class="kpi-val" id="c-pd">—</div>
+          <div class="kpi-sub">Média / dia</div>
+        </div>
+        <div class="kpi teal">
+          <div class="kpi-lbl">Atendimentos</div>
+          <div class="kpi-val" id="c-atend">—</div>
+          <div class="kpi-sub">Total</div>
+        </div>
+        <div class="kpi rose">
+          <div class="kpi-lbl">Horas Trabalhadas</div>
+          <div class="kpi-val" id="c-horas">—</div>
+          <div class="kpi-sub">Total acumulado</div>
+        </div>
+      </div>
+      <div class="chart-grid">
+        <div class="cc">
+          <div class="cc-title">Evolução Mensal — Clínico</div>
+          <div class="cc-sub">Produção total por período</div><canvas id="ch-c-mon" height="230"></canvas>
+        </div>
+        <div class="cc">
+          <div class="cc-title">Distribuição por Dentista</div>
+          <div class="cc-sub">% de participação</div><canvas id="ch-c-donut" height="230"></canvas>
+        </div>
+        <div class="cc full">
+          <div class="cc-title">Métricas de Eficiência — Clínico</div>
+          <div class="cc-sub">Prod./Atendimento · Prod./Hora · Prod./Dia por dentista</div><canvas id="ch-c-metrics"
+            height="170"></canvas>
+        </div>
+      </div>
+      <div class="tc">
+        <div class="cc-title">Ranking — Clínico</div>
+        <div class="cc-sub" style="margin-bottom:14px">Ordenado por Prod./Dia</div>
+        <div id="tbl-c"></div>
+      </div>
     </div>
-    <div class="kpi-grid">
-      <div class="kpi blue">  <div class="kpi-lbl">Produção Total</div>       <div class="kpi-val" id="c-prod">—</div>  <div class="kpi-sub">Clínicos no período</div></div>
-      <div class="kpi orange"><div class="kpi-lbl">Prod. / Atendimento</div>  <div class="kpi-val" id="c-pa">—</div>   <div class="kpi-sub">Ticket médio</div></div>
-      <div class="kpi green"> <div class="kpi-lbl">Prod. / Hora</div>         <div class="kpi-val" id="c-ph">—</div>   <div class="kpi-sub">Eficiência horária</div></div>
-      <div class="kpi indigo"><div class="kpi-lbl">Prod. / Dia</div>          <div class="kpi-val" id="c-pd">—</div>   <div class="kpi-sub">Média / dia</div></div>
-      <div class="kpi teal">  <div class="kpi-lbl">Atendimentos</div>         <div class="kpi-val" id="c-atend">—</div><div class="kpi-sub">Total</div></div>
-      <div class="kpi rose">  <div class="kpi-lbl">Horas Trabalhadas</div>    <div class="kpi-val" id="c-horas">—</div><div class="kpi-sub">Total acumulado</div></div>
-    </div>
-    <div class="chart-grid">
-      <div class="cc"><div class="cc-title">Evolução Mensal — Clínico</div><div class="cc-sub">Produção total por período</div><canvas id="ch-c-mon" height="230"></canvas></div>
-      <div class="cc"><div class="cc-title">Distribuição por Dentista</div><div class="cc-sub">% de participação</div><canvas id="ch-c-donut" height="230"></canvas></div>
-      <div class="cc full"><div class="cc-title">Métricas de Eficiência — Clínico</div><div class="cc-sub">Prod./Atendimento · Prod./Hora · Prod./Dia por dentista</div><canvas id="ch-c-metrics" height="170"></canvas></div>
-    </div>
-    <div class="tc">
-      <div class="cc-title">Ranking — Clínico</div>
-      <div class="cc-sub" style="margin-bottom:14px">Ordenado por Prod./Dia</div>
-      <div id="tbl-c"></div>
-    </div>
-  </div>
 
-  <!-- ══ TAB ORTODONTIA ══ -->
-  <div class="tab-content" id="tab-ortho">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
-      <span class="sb o" style="font-size:13px;padding:4px 13px">😁 Ortodontia</span>
-      <span style="font-size:12px;color:var(--muted)">Análise detalhada dos ortodontistas</span>
+    <!-- ══ TAB ORTODONTIA ══ -->
+    <div class="tab-content" id="tab-ortho">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+        <span class="sb o" style="font-size:13px;padding:4px 13px">😁 Ortodontia</span>
+        <span style="font-size:12px;color:var(--muted)">Análise detalhada dos ortodontistas</span>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi purple">
+          <div class="kpi-lbl">Produção Total</div>
+          <div class="kpi-val" id="o-prod">—</div>
+          <div class="kpi-sub">Ortodontia no período</div>
+        </div>
+        <div class="kpi orange">
+          <div class="kpi-lbl">Prod. / Atendimento</div>
+          <div class="kpi-val" id="o-pa">—</div>
+          <div class="kpi-sub">Ticket médio</div>
+        </div>
+        <div class="kpi green">
+          <div class="kpi-lbl">Prod. / Hora</div>
+          <div class="kpi-val" id="o-ph">—</div>
+          <div class="kpi-sub">Eficiência horária</div>
+        </div>
+        <div class="kpi indigo">
+          <div class="kpi-lbl">Prod. / Dia</div>
+          <div class="kpi-val" id="o-pd">—</div>
+          <div class="kpi-sub">Média / dia</div>
+        </div>
+        <div class="kpi teal">
+          <div class="kpi-lbl">Atendimentos</div>
+          <div class="kpi-val" id="o-atend">—</div>
+          <div class="kpi-sub">Total</div>
+        </div>
+        <div class="kpi rose">
+          <div class="kpi-lbl">Horas Trabalhadas</div>
+          <div class="kpi-val" id="o-horas">—</div>
+          <div class="kpi-sub">Total acumulado</div>
+        </div>
+      </div>
+      <div class="chart-grid">
+        <div class="cc">
+          <div class="cc-title">Evolução Mensal — Ortodontia</div>
+          <div class="cc-sub">Produção total por período</div><canvas id="ch-o-mon" height="230"></canvas>
+        </div>
+        <div class="cc">
+          <div class="cc-title">Distribuição por Dentista</div>
+          <div class="cc-sub">% de participação</div><canvas id="ch-o-donut" height="230"></canvas>
+        </div>
+        <div class="cc full">
+          <div class="cc-title">Métricas de Eficiência — Ortodontia</div>
+          <div class="cc-sub">Prod./Atendimento · Prod./Hora · Prod./Dia por dentista</div><canvas id="ch-o-metrics"
+            height="170"></canvas>
+        </div>
+      </div>
+      <div class="tc">
+        <div class="cc-title">Ranking — Ortodontia</div>
+        <div class="cc-sub" style="margin-bottom:14px">Ordenado por Prod./Dia</div>
+        <div id="tbl-o"></div>
+      </div>
     </div>
-    <div class="kpi-grid">
-      <div class="kpi purple"><div class="kpi-lbl">Produção Total</div>       <div class="kpi-val" id="o-prod">—</div>  <div class="kpi-sub">Ortodontia no período</div></div>
-      <div class="kpi orange"><div class="kpi-lbl">Prod. / Atendimento</div>  <div class="kpi-val" id="o-pa">—</div>   <div class="kpi-sub">Ticket médio</div></div>
-      <div class="kpi green"> <div class="kpi-lbl">Prod. / Hora</div>         <div class="kpi-val" id="o-ph">—</div>   <div class="kpi-sub">Eficiência horária</div></div>
-      <div class="kpi indigo"><div class="kpi-lbl">Prod. / Dia</div>          <div class="kpi-val" id="o-pd">—</div>   <div class="kpi-sub">Média / dia</div></div>
-      <div class="kpi teal">  <div class="kpi-lbl">Atendimentos</div>         <div class="kpi-val" id="o-atend">—</div><div class="kpi-sub">Total</div></div>
-      <div class="kpi rose">  <div class="kpi-lbl">Horas Trabalhadas</div>    <div class="kpi-val" id="o-horas">—</div><div class="kpi-sub">Total acumulado</div></div>
-    </div>
-    <div class="chart-grid">
-      <div class="cc"><div class="cc-title">Evolução Mensal — Ortodontia</div><div class="cc-sub">Produção total por período</div><canvas id="ch-o-mon" height="230"></canvas></div>
-      <div class="cc"><div class="cc-title">Distribuição por Dentista</div><div class="cc-sub">% de participação</div><canvas id="ch-o-donut" height="230"></canvas></div>
-      <div class="cc full"><div class="cc-title">Métricas de Eficiência — Ortodontia</div><div class="cc-sub">Prod./Atendimento · Prod./Hora · Prod./Dia por dentista</div><canvas id="ch-o-metrics" height="170"></canvas></div>
-    </div>
-    <div class="tc">
-      <div class="cc-title">Ranking — Ortodontia</div>
-      <div class="cc-sub" style="margin-bottom:14px">Ordenado por Prod./Dia</div>
-      <div id="tbl-o"></div>
-    </div>
-  </div>
 
-</main>
+  </main>
 
-<script>
-let rawData = [];
-const CH = {};
+  <script>
+    let rawData = [];
+    const CH = {};
 
-// ─── TABS ─────────────────────────────────────────────────────
-function switchTab(t) {
-  document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active'));
-  document.getElementById('tab-'+t).classList.add('active');
-  document.querySelector('.tab-'+t).classList.add('active');
-}
-
-// ─── LOAD DATA (GOOGLE SHEETS FIXO) ──────────────────────────
-const SHEET_ID = '1BDyHqn0J90HPmJiCHHawYS4IxfH8dhe8x5YMQO_EGMI';
-const SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=0`;
-
-async function loadData() {
-  const btn = document.getElementById('btn-sync');
-  btn.classList.add('loading');
-  setStatus('Carregando...','#fbbf24');
-  const errorBox = document.getElementById('error-box');
-  errorBox.style.display='none';
-
-  try {
-    const r = await fetch(SHEET_CSV_URL);
-    
-    if(!r.ok) {
-        throw new Error("Erro na rede ou link inválido.");
+    // ─── TABS ─────────────────────────────────────────────────────
+    function switchTab(t) {
+      document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('active'));
+      document.getElementById('tab-' + t).classList.add('active');
+      document.querySelector('.tab-' + t).classList.add('active');
     }
-    
-    const text = await r.text();
-    
-    if(text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
-        throw new Error("Planilha privada! Altere o acesso para 'Qualquer pessoa com o link'.");
-    }
-    
-    parseCSV(text);
-    afterLoad('Conectado');
 
-  } catch(e) {
-    setStatus('Erro de acesso','#ef4444');
-    errorBox.innerHTML = `
+    // ─── LOAD DATA (GOOGLE SHEETS FIXO) ──────────────────────────
+    const SHEET_ID = '1BDyHqn0J90HPmJiCHHawYS4IxfH8dhe8x5YMQO_EGMI';
+    const SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=0`;
+
+    async function loadData() {
+      const btn = document.getElementById('btn-sync');
+      btn.classList.add('loading');
+      setStatus('Carregando...', '#fbbf24');
+      const errorBox = document.getElementById('error-box');
+      errorBox.style.display = 'none';
+
+      try {
+        const r = await fetch(SHEET_CSV_URL);
+
+        if (!r.ok) {
+          throw new Error("Erro na rede ou link inválido.");
+        }
+
+        const text = await r.text();
+
+        if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+          throw new Error("Planilha privada! Altere o acesso para 'Qualquer pessoa com o link'.");
+        }
+
+        parseCSV(text);
+        afterLoad('Conectado');
+
+      } catch (e) {
+        setStatus('Erro de acesso', '#ef4444');
+        errorBox.innerHTML = `
       <strong>⚠️ Não foi possível carregar a planilha.</strong><br><br>
       Detalhe do erro: ${e.message}<br><br>
       <strong>Verifique:</strong>
@@ -379,244 +1112,278 @@ async function loadData() {
         <li>Verifique sua conexão com a internet.</li>
       </ul>
     `;
-    errorBox.style.display='block';
-  } finally {
-    btn.classList.remove('loading');
-  }
-}
-
-// ─── PARSE CSV ────────────────────────────────────────────────
-function norm(s){return String(s||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/["""]/g,'');}
-
-function parseCSV(text) {
-  const lines=text.trim().split(/\r?\n/);
-  const headers=lines[0].split(',').map(norm);
-  const cm={};
-  headers.forEach((h,i)=>{
-    if(h.includes('period')||h==='periodo')             cm.periodo  =i;
-    else if(['dentista','dentist','profissional'].includes(h))  cm.dentist  =i;
-    else if(h.includes('unidade')||h.includes('unit')||h.includes('clinica')||h.includes('filial')) cm.unit=i;
-    else if(h==='atendimento'||h==='atendimentos')        cm.atend    =i;
-    else if(h.includes('producao')&&h.includes('hora'))  cm.phora    =i;
-    else if(h.includes('producao')&&h.includes('dia'))   cm.pdia     =i;
-    else if(h.includes('producao')&&h.includes('atend')) cm.pa       =i;
-    else if(h==='producao'||h==='producao total'||h==='producao (r$)') cm.prod=i;
-    else if(h.includes('hora')&&h.includes('trabalhada'))cm.horas    =i;
-    else if(h.includes('especialidade')||h.includes('specialty')) cm.specialty=i;
-  });
-  // Fallback by position if headers are unrecognized
-  if(cm.prod===undefined)  cm.prod  =headers.findIndex(h=>h.includes('producao')&&!h.includes('/'))||4;
-  if(cm.horas===undefined) cm.horas =6;
-
-  rawData=[];
-  for(let i=1;i<lines.length;i++){
-    const row=lines[i];
-    if(!row.trim()) continue;
-    // Handle quoted fields with commas
-    const cols=[];
-    let cur='', inQ=false;
-    for(const ch of row){
-      if(ch==='"'||ch==='"'||ch==='"'){inQ=!inQ;}
-      else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
-      else cur+=ch;
+        errorBox.style.display = 'block';
+      } finally {
+        btn.classList.remove('loading');
+      }
     }
-    cols.push(cur.trim());
-    if(cols.length<3) continue;
-    const toNum=idx=>{if(idx===undefined||idx>=cols.length)return 0;const v=(cols[idx]||'0').replace(/[R$\s.]/g,'').replace(',','.');return parseFloat(v)||0;};
-    const prod=toNum(cm.prod);
-    if(!prod&&i>1) continue;
-    const atend=toNum(cm.atend)||1;
-    const horas=toNum(cm.horas);
-    const pa=toNum(cm.pa)||Math.round(prod/atend);
-    const phora=toNum(cm.phora)||(horas>0?Math.round(prod/horas):0);
-    const pdia=toNum(cm.pdia)||0;
-    rawData.push({
-      periodo:  (cols[cm.periodo]||'').trim(),
-      dentist:  (cols[cm.dentist]||'?').trim(),
-      unit:     (cols[cm.unit]   ||'').trim(),
-      atend,prod,pa,horas,phora,pdia,
-      specialty:(cols[cm.specialty]||'').trim()
-    });
-  }
-}
 
-function afterLoad(msg){
-  setStatus(msg,'#6ee7b7');
-  document.getElementById('filters').style.display='flex';
-  document.getElementById('last-updated').textContent='Atualizado: '+new Date().toLocaleTimeString('pt-BR');
-  populateFilters();
-  renderAll();
-}
-function setStatus(t,c){document.getElementById('stxt').textContent=t;document.getElementById('sdot').style.background=c;}
-function st(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
-function specOf(r){const s=norm(r.specialty||'');return s.includes('orto')?'ortho':'clinico';}
+    // ─── PARSE CSV ────────────────────────────────────────────────
+    function norm(s) { return String(s || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/["""]/g, ''); }
 
-// ─── PERÍODO SORT ─────────────────────────────────────────────
-const MMAP={jan:1,fev:2,mar:3,abr:4,mai:5,jun:6,jul:7,ago:8,set:9,out:10,nov:11,dez:12};
-function pKey(p){
-  const m=String(p||'').match(/^([a-zA-Zç]+)[\/\-\. ](\d{4})/);
-  if(!m)return p;
-  return `${m[2]}-${String(MMAP[m[1].toLowerCase().slice(0,3)]||0).padStart(2,'0')}`;
-}
+    function parseCSV(text) {
+      const lines = text.trim().split(/\r?\n/);
+      const headers = lines[0].split(',').map(norm);
+      const cm = {};
+      headers.forEach((h, i) => {
+        if (h.includes('period') || h === 'periodo') cm.periodo = i;
+        else if (['dentista', 'dentist', 'profissional'].includes(h)) cm.dentist = i;
+        else if (h.includes('unidade') || h.includes('unit') || h.includes('clinica') || h.includes('filial')) cm.unit = i;
+        else if (h === 'atendimento' || h === 'atendimentos') cm.atend = i;
+        else if (h.includes('producao') && h.includes('hora')) cm.phora = i;
+        else if (h.includes('producao') && h.includes('dia')) cm.pdia = i;
+        else if (h.includes('producao') && h.includes('atend')) cm.pa = i;
+        else if (h === 'producao' || h === 'producao total' || h === 'producao (r$)') cm.prod = i;
+        else if (h.includes('hora') && h.includes('trabalhada')) cm.horas = i;
+        else if (h.includes('especialidade') || h.includes('specialty')) cm.specialty = i;
+      });
+      // Fallback by position if headers are unrecognized
+      if (cm.prod === undefined) cm.prod = headers.findIndex(h => h.includes('producao') && !h.includes('/')) || 4;
+      if (cm.horas === undefined) cm.horas = 6;
 
-// ─── FILTERS ─────────────────────────────────────────────────
-function populateFilters(){
-  const periods =[...new Set(rawData.map(r=>r.periodo))].sort((a,b)=>pKey(a).localeCompare(pKey(b)));
-  const units   =[...new Set(rawData.map(r=>r.unit).filter(Boolean))].sort();
-  const dentists=[...new Set(rawData.map(r=>r.dentist))].sort();
-  fillSel('f-unit', units,   'Todas');
-  fillSel('f-dent', dentists,'Todos');
-  fillSel('f-start',periods, 'Início');
-  fillSel('f-end',  periods, 'Fim', true);
-  document.getElementById('pill-c').textContent=new Set(rawData.filter(r=>specOf(r)==='clinico').map(r=>r.dentist)).size;
-  document.getElementById('pill-o').textContent=new Set(rawData.filter(r=>specOf(r)==='ortho').map(r=>r.dentist)).size;
-}
-function fillSel(id,items,ph,last=false){
-  const s=document.getElementById(id);
-  s.innerHTML=`<option value="">${ph}</option>`;
-  items.forEach((v,i)=>s.innerHTML+=`<option value="${v}"${last&&i===items.length-1?' selected':''}>${v}</option>`);
-}
-function getFiltered(){
-  const spec=document.getElementById('f-spec').value;
-  const unit=document.getElementById('f-unit').value;
-  const dent=document.getElementById('f-dent').value;
-  const start=document.getElementById('f-start').value;
-  const end=document.getElementById('f-end').value;
-  return rawData.filter(r=>{
-    if(spec&&specOf(r)!==spec) return false;
-    if(unit&&r.unit!==unit)   return false;
-    if(dent&&r.dentist!==dent)return false;
-    if(start&&pKey(r.periodo)<pKey(start))return false;
-    if(end&&pKey(r.periodo)>pKey(end))    return false;
-    return true;
-  });
-}
-function clearFilters(){
-  ['f-spec','f-unit','f-dent','f-start','f-end'].forEach(id=>document.getElementById(id).value='');
-  populateFilters();renderAll();
-}
+      rawData = [];
+      for (let i = 1; i < lines.length; i++) {
+        const row = lines[i];
+        if (!row.trim()) continue;
+        // Handle quoted fields with commas
+        const cols = [];
+        let cur = '', inQ = false;
+        for (const ch of row) {
+          if (ch === '"' || ch === '"' || ch === '"') { inQ = !inQ; }
+          else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+          else cur += ch;
+        }
+        cols.push(cur.trim());
+        if (cols.length < 3) continue;
+        const toNum = idx => { if (idx === undefined || idx >= cols.length) return 0; const v = (cols[idx] || '0').replace(/[R$\s.]/g, '').replace(',', '.'); return parseFloat(v) || 0; };
+        const prod = toNum(cm.prod);
+        if (!prod && i > 1) continue;
+        const atend = toNum(cm.atend) || 1;
+        const horas = toNum(cm.horas);
+        const pa = toNum(cm.pa) || Math.round(prod / atend);
+        const phora = toNum(cm.phora) || (horas > 0 ? Math.round(prod / horas) : 0);
+        const pdia = toNum(cm.pdia) || 0;
+        rawData.push({
+          periodo: (cols[cm.periodo] || '').trim(),
+          dentist: (cols[cm.dentist] || '?').trim(),
+          unit: (cols[cm.unit] || '').trim(),
+          atend, prod, pa, horas, phora, pdia,
+          specialty: (cols[cm.specialty] || '').trim()
+        });
+      }
+    }
 
-// ─── METRICS ─────────────────────────────────────────────────
-function calcM(data){
-  const prod=data.reduce((s,r)=>s+r.prod,0);
-  const atend=data.reduce((s,r)=>s+r.atend,0);
-  const horas=data.reduce((s,r)=>s+r.horas,0);
-  const pdW=data.reduce((s,r)=>s+(r.pdia*r.prod),0);
-  return{prod,atend,horas,
-    pa:atend>0?prod/atend:0,
-    ph:horas>0?prod/horas:0,
-    pd:prod>0?pdW/prod:0,
-    dents:[...new Set(data.map(r=>r.dentist))],
-    units:[...new Set(data.map(r=>r.unit))]
-  };
-}
-const fmt=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:0,maximumFractionDigits:0});
-const fmtK=v=>v>=1000?'R$'+(v/1000).toFixed(1).replace('.',',')+' k':fmt(v);
-function dc(k){if(CH[k]){CH[k].destroy();delete CH[k];}}
+    function afterLoad(msg) {
+      setStatus(msg, '#6ee7b7');
+      document.getElementById('filters').style.display = 'flex';
+      document.getElementById('last-updated').textContent = 'Atualizado: ' + new Date().toLocaleTimeString('pt-BR');
+      populateFilters();
+      renderAll();
+    }
+    function setStatus(t, c) { document.getElementById('stxt').textContent = t; document.getElementById('sdot').style.background = c; }
+    function st(id, v) { const e = document.getElementById(id); if (e) e.textContent = v; }
+    function specOf(r) { const s = norm(r.specialty || ''); return s.includes('orto') ? 'ortho' : 'clinico'; }
 
-// ─── RENDER ALL ───────────────────────────────────────────────
-function renderAll(){
-  const all=getFiltered();
-  const cli=all.filter(r=>specOf(r)==='clinico');
-  const ort=all.filter(r=>specOf(r)==='ortho');
-  renderGeral(all,cli,ort);
-  renderSpec('c',cli,'#0a4f7f','#1d9bd1','#48cae4','bm-c');
-  renderSpec('o',ort,'#6b21a8','#9333ea','#c084fc','bm-o');
-}
+    // ─── PERÍODO PARSE ────────────────────────────────────────────
+    const MMAP = { jan: 1, fev: 2, mar: 3, abr: 4, mai: 5, jun: 6, jul: 7, ago: 8, set: 9, out: 10, nov: 11, dez: 12 };
+    const MONTH_NAMES = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
-// ─── GERAL ────────────────────────────────────────────────────
-function renderGeral(all,cli,ort){
-  const m=calcM(all),mc=calcM(cli),mo=calcM(ort);
-  st('g-prod',fmtK(m.prod));st('g-paten',fmtK(m.pa));st('g-phora',fmtK(m.ph));st('g-pdia',fmtK(m.pd));
-  st('g-atend',m.atend.toLocaleString('pt-BR'));st('g-horas',m.horas.toLocaleString('pt-BR')+'h');
-  st('g-dents',m.dents.length);st('g-units',m.units.filter(Boolean).length);
-  st('cs-prod',fmtK(mc.prod));st('cs-pa',fmtK(mc.pa));st('cs-ph',fmtK(mc.ph));st('cs-pd',fmtK(mc.pd));
-  st('os-prod',fmtK(mo.prod));st('os-pa',fmtK(mo.pa));st('os-ph',fmtK(mo.ph));st('os-pd',fmtK(mo.pd));
+    // Extrai {mes, ano} de formatos: "05/2026", "5/2026", "Jan/2025", "Fev/2025"
+    function parsePeriodo(p) {
+      const s = String(p || '').trim();
+      // Tenta numérico primeiro: 05/2026 ou 5/2026
+      const numMatch = s.match(/^(\d{1,2})[\/\-\.](\d{4})$/);
+      if (numMatch) return { mes: parseInt(numMatch[1], 10), ano: parseInt(numMatch[2], 10) };
+      // Tenta nome: Jan/2025, Fev/2025
+      const nameMatch = s.match(/^([a-zA-Zç]+)[\/\-\. ](\d{4})/);
+      if (nameMatch) {
+        const m = MMAP[nameMatch[1].toLowerCase().slice(0, 3)] || 0;
+        return { mes: m, ano: parseInt(nameMatch[2], 10) };
+      }
+      return { mes: 0, ano: 0 };
+    }
 
-  const periods=[...new Set(all.map(r=>r.periodo))].sort((a,b)=>pKey(a).localeCompare(pKey(b)));
-  const bC={},bO={};
-  cli.forEach(r=>{bC[r.periodo]=(bC[r.periodo]||0)+r.prod;});
-  ort.forEach(r=>{bO[r.periodo]=(bO[r.periodo]||0)+r.prod;});
-  dc('g-mon');
-  CH['g-mon']=new Chart(document.getElementById('ch-g-mon'),{type:'bar',data:{labels:periods,datasets:[
-    {label:'Clínico',    data:periods.map(p=>bC[p]||0),backgroundColor:'rgba(10,79,127,0.85)',borderRadius:5},
-    {label:'Ortodontia', data:periods.map(p=>bO[p]||0),backgroundColor:'rgba(107,33,168,0.75)',borderRadius:5}
-  ]},options:{responsive:true,scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:11}}},y:{stacked:true,grid:{color:'#e8f0f7'},ticks:{callback:v=>'R$'+v.toLocaleString('pt-BR'),font:{size:11}}}},plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:12}},tooltip:{callbacks:{label:ctx=>' '+fmt(ctx.raw)}}}}});
+    function pKey(p) {
+      const { mes, ano } = parsePeriodo(p);
+      if (!ano) return p;
+      return `${ano}-${String(mes).padStart(2, '0')}`;
+    }
 
-  dc('g-donut');
-  CH['g-donut']=new Chart(document.getElementById('ch-g-donut'),{type:'doughnut',data:{labels:['Clínico','Ortodontia'],datasets:[{data:[mc.prod,mo.prod],backgroundColor:['#0a4f7f','#6b21a8'],borderWidth:3,borderColor:'#fff'}]},options:{responsive:true,cutout:'62%',plugins:{legend:{position:'bottom',labels:{font:{size:12},padding:14,boxWidth:14}},tooltip:{callbacks:{label:ctx=>' '+fmt(ctx.raw)}}}}});
+    // ─── FILTERS ─────────────────────────────────────────────────
+    function populateFilters() {
+      const units = [...new Set(rawData.map(r => r.unit).filter(Boolean))].sort();
+      const dentists = [...new Set(rawData.map(r => r.dentist))].sort();
+      const months = [...new Set(rawData.map(r => parsePeriodo(r.periodo).mes).filter(m => m > 0))].sort((a, b) => a - b);
+      const years = [...new Set(rawData.map(r => parsePeriodo(r.periodo).ano).filter(y => y > 0))].sort((a, b) => a - b);
 
-  const byU={};all.forEach(r=>{if(r.unit)byU[r.unit]=(byU[r.unit]||0)+r.prod;});
-  const uS=Object.entries(byU).sort((a,b)=>b[1]-a[1]);
-  dc('g-unit');
-  CH['g-unit']=new Chart(document.getElementById('ch-g-unit'),{type:'bar',data:{labels:uS.map(e=>e[0]),datasets:[{data:uS.map(e=>e[1]),backgroundColor:uS.map((_,i)=>['#0a4f7f','#00b4d8','#2ec4b6','#48cae4','#90e0ef'][i%5]),borderRadius:7,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+fmt(ctx.raw)}}},scales:{x:{grid:{color:'#e8f0f7'},ticks:{callback:v=>'R$'+v.toLocaleString('pt-BR'),font:{size:11}}},y:{grid:{display:false},ticks:{font:{size:11}}}}}});
+      fillSel('f-unit', units.map(v => ({ v, l: v })), 'Todas');
+      fillSel('f-dent', dentists.map(v => ({ v, l: v })), 'Todos');
+      fillSel('f-month', months.map(m => ({ v: String(m), l: MONTH_NAMES[m] })), 'Todos');
+      fillSel('f-year', years.map(y => ({ v: String(y), l: String(y) })), 'Todos');
 
-  renderTable('tbl-g',all,'bm-g',true);
-}
+      document.getElementById('pill-c').textContent = new Set(rawData.filter(r => specOf(r) === 'clinico').map(r => r.dentist)).size;
+      document.getElementById('pill-o').textContent = new Set(rawData.filter(r => specOf(r) === 'ortho').map(r => r.dentist)).size;
+    }
+    function fillSel(id, items, ph) {
+      const s = document.getElementById(id);
+      const cur = s.value;
+      s.innerHTML = `<option value="">${ph}</option>`;
+      items.forEach(({ v, l }) => s.innerHTML += `<option value="${v}">${l}</option>`);
+      if (cur) s.value = cur; // preserva seleção ao recarregar
+    }
+    function getFiltered() {
+      const spec = document.getElementById('f-spec').value;
+      const unit = document.getElementById('f-unit').value;
+      const dent = document.getElementById('f-dent').value;
+      const fMonth = document.getElementById('f-month').value;
+      const fYear = document.getElementById('f-year').value;
+      return rawData.filter(r => {
+        if (spec && specOf(r) !== spec) return false;
+        if (unit && r.unit !== unit) return false;
+        if (dent && r.dentist !== dent) return false;
+        if (fMonth || fYear) {
+          const { mes, ano } = parsePeriodo(r.periodo);
+          if (fMonth && mes !== parseInt(fMonth, 10)) return false;
+          if (fYear && ano !== parseInt(fYear, 10)) return false;
+        }
+        return true;
+      });
+    }
+    function clearFilters() {
+      ['f-spec', 'f-unit', 'f-dent', 'f-month', 'f-year'].forEach(id => document.getElementById(id).value = '');
+      populateFilters(); renderAll();
+    }
 
-// ─── SPECIALTY ────────────────────────────────────────────────
-function renderSpec(p,data,c1,c2,c3,bc){
-  const m=calcM(data);
-  st(`${p}-prod`,fmtK(m.prod));st(`${p}-pa`,fmtK(m.pa));st(`${p}-ph`,fmtK(m.ph));
-  st(`${p}-pd`,fmtK(m.pd));st(`${p}-atend`,m.atend.toLocaleString('pt-BR'));st(`${p}-horas`,m.horas.toLocaleString('pt-BR')+'h');
+    // ─── METRICS ─────────────────────────────────────────────────
+    function calcM(data) {
+      const prod = data.reduce((s, r) => s + r.prod, 0);
+      const atend = data.reduce((s, r) => s + r.atend, 0);
+      const horas = data.reduce((s, r) => s + r.horas, 0);
+      const pdW = data.reduce((s, r) => s + (r.pdia * r.prod), 0);
+      return {
+        prod, atend, horas,
+        pa: atend > 0 ? prod / atend : 0,
+        ph: horas > 0 ? prod / horas : 0,
+        pd: prod > 0 ? pdW / prod : 0,
+        dents: [...new Set(data.map(r => r.dentist))],
+        units: [...new Set(data.map(r => r.unit))]
+      };
+    }
+    const fmt = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    const fmtK = v => v >= 1000 ? 'R$' + (v / 1000).toFixed(1).replace('.', ',') + ' k' : fmt(v);
+    function dc(k) { if (CH[k]) { CH[k].destroy(); delete CH[k]; } }
 
-  const periods=[...new Set(data.map(r=>r.periodo))].sort((a,b)=>pKey(a).localeCompare(pKey(b)));
-  const bP={};data.forEach(r=>{bP[r.periodo]=(bP[r.periodo]||0)+r.prod;});
-  dc(`${p}-mon`);
-  CH[`${p}-mon`]=new Chart(document.getElementById(`ch-${p}-mon`),{type:'line',data:{labels:periods,datasets:[{label:'Produção',data:periods.map(p=>bP[p]||0),borderColor:c1,backgroundColor:c1+'18',borderWidth:2.5,pointBackgroundColor:c1,pointRadius:5,fill:true,tension:0.4}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+fmt(ctx.raw)}}},scales:{y:{grid:{color:'#e8f0f7'},ticks:{callback:v=>'R$'+v.toLocaleString('pt-BR'),font:{size:11}}},x:{grid:{display:false},ticks:{font:{size:11}}}}}});
+    // ─── RENDER ALL ───────────────────────────────────────────────
+    function renderAll() {
+      const all = getFiltered();
+      const cli = all.filter(r => specOf(r) === 'clinico');
+      const ort = all.filter(r => specOf(r) === 'ortho');
+      renderGeral(all, cli, ort);
+      renderSpec('c', cli, '#0a4f7f', '#1d9bd1', '#48cae4', 'bm-c');
+      renderSpec('o', ort, '#6b21a8', '#9333ea', '#c084fc', 'bm-o');
+    }
 
-  const bD={};data.forEach(r=>{bD[r.dentist]=(bD[r.dentist]||0)+r.prod;});
-  const sD=Object.entries(bD).sort((a,b)=>b[1]-a[1]);
-  const palC=['#0a4f7f','#1565a8','#1d82d4','#00b4d8','#48cae4','#90e0ef'];
-  const palO=['#6b21a8','#7e22ce','#9333ea','#a855f7','#c084fc','#e9d5ff'];
-  dc(`${p}-donut`);
-  CH[`${p}-donut`]=new Chart(document.getElementById(`ch-${p}-donut`),{type:'doughnut',data:{labels:sD.map(e=>e[0]),datasets:[{data:sD.map(e=>e[1]),backgroundColor:p==='c'?palC:palO,borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,cutout:'60%',plugins:{legend:{position:'bottom',labels:{font:{size:11},padding:9,boxWidth:11}},tooltip:{callbacks:{label:ctx=>' '+fmt(ctx.raw)}}}}});
+    // ─── GERAL ────────────────────────────────────────────────────
+    function renderGeral(all, cli, ort) {
+      const m = calcM(all), mc = calcM(cli), mo = calcM(ort);
+      st('g-prod', fmtK(m.prod)); st('g-paten', fmtK(m.pa)); st('g-phora', fmtK(m.ph)); st('g-pdia', fmtK(m.pd));
+      st('g-atend', m.atend.toLocaleString('pt-BR')); st('g-horas', m.horas.toLocaleString('pt-BR') + 'h');
+      st('g-dents', m.dents.length); st('g-units', m.units.filter(Boolean).length);
+      st('cs-prod', fmtK(mc.prod)); st('cs-pa', fmtK(mc.pa)); st('cs-ph', fmtK(mc.ph)); st('cs-pd', fmtK(mc.pd));
+      st('os-prod', fmtK(mo.prod)); st('os-pa', fmtK(mo.pa)); st('os-ph', fmtK(mo.ph)); st('os-pd', fmtK(mo.pd));
 
-  const ds={};
-  data.forEach(r=>{
-    if(!ds[r.dentist])ds[r.dentist]={prod:0,atend:0,horas:0,pdW:0};
-    ds[r.dentist].prod+=r.prod;ds[r.dentist].atend+=r.atend;
-    ds[r.dentist].horas+=r.horas;ds[r.dentist].pdW+=r.pdia*r.prod;
-  });
-  const names=Object.keys(ds).sort((a,b)=>ds[b].prod-ds[a].prod);
-  dc(`${p}-metrics`);
-  CH[`${p}-metrics`]=new Chart(document.getElementById(`ch-${p}-metrics`),{type:'bar',data:{labels:names,datasets:[
-    {label:'Prod./Atend.',data:names.map(n=>ds[n].atend>0?Math.round(ds[n].prod/ds[n].atend):0),backgroundColor:c1,borderRadius:5},
-    {label:'Prod./Hora', data:names.map(n=>ds[n].horas>0?Math.round(ds[n].prod/ds[n].horas):0),backgroundColor:c2,borderRadius:5},
-    {label:'Prod./Dia',  data:names.map(n=>ds[n].prod>0?Math.round(ds[n].pdW/ds[n].prod):0),   backgroundColor:c3,borderRadius:5}
-  ]},options:{responsive:true,scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{grid:{color:'#e8f0f7'},ticks:{callback:v=>'R$'+v.toLocaleString('pt-BR'),font:{size:11}}}},plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:12}},tooltip:{callbacks:{label:ctx=>' '+fmt(ctx.raw)}}}}});
+      const periods = [...new Set(all.map(r => r.periodo))].sort((a, b) => pKey(a).localeCompare(pKey(b)));
+      const bC = {}, bO = {};
+      cli.forEach(r => { bC[r.periodo] = (bC[r.periodo] || 0) + r.prod; });
+      ort.forEach(r => { bO[r.periodo] = (bO[r.periodo] || 0) + r.prod; });
+      dc('g-mon');
+      CH['g-mon'] = new Chart(document.getElementById('ch-g-mon'), {
+        type: 'bar', data: {
+          labels: periods, datasets: [
+            { label: 'Clínico', data: periods.map(p => bC[p] || 0), backgroundColor: 'rgba(10,79,127,0.85)', borderRadius: 5 },
+            { label: 'Ortodontia', data: periods.map(p => bO[p] || 0), backgroundColor: 'rgba(107,33,168,0.75)', borderRadius: 5 }
+          ]
+        }, options: { responsive: true, scales: { x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 } } }, y: { stacked: true, grid: { color: '#e8f0f7' }, ticks: { callback: v => 'R$' + v.toLocaleString('pt-BR'), font: { size: 11 } } } }, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12 } }, tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.raw) } } } }
+      });
 
-  renderTable(p==='c'?'tbl-c':'tbl-o',data,bc,false);
-}
+      dc('g-donut');
+      CH['g-donut'] = new Chart(document.getElementById('ch-g-donut'), { type: 'doughnut', data: { labels: ['Clínico', 'Ortodontia'], datasets: [{ data: [mc.prod, mo.prod], backgroundColor: ['#0a4f7f', '#6b21a8'], borderWidth: 3, borderColor: '#fff' }] }, options: { responsive: true, cutout: '62%', plugins: { legend: { position: 'bottom', labels: { font: { size: 12 }, padding: 14, boxWidth: 14 } }, tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.raw) } } } } });
 
-// ─── TABLE ────────────────────────────────────────────────────
-function renderTable(id,data,bc,showSpec){
-  const ds={};
-  data.forEach(r=>{
-    if(!ds[r.dentist])ds[r.dentist]={prod:0,atend:0,horas:0,pdW:0,units:new Set(),specialty:r.specialty};
-    ds[r.dentist].prod+=r.prod;ds[r.dentist].atend+=r.atend;
-    ds[r.dentist].horas+=r.horas;ds[r.dentist].pdW+=r.pdia*r.prod;
-    if(r.unit)ds[r.dentist].units.add(r.unit);
-  });
-  const sorted=Object.entries(ds).sort((a,b)=>{
-    const pdA=a[1].prod>0?a[1].pdW/a[1].prod:0;
-    const pdB=b[1].prod>0?b[1].pdW/b[1].prod:0;
-    return pdB-pdA;
-  });
-  const max=sorted[0]?.[1].prod||1;
-  if(!sorted.length){document.getElementById(id).innerHTML='<div class="empty"><div class="ic">🔍</div><h3>Sem resultados</h3><p>Ajuste os filtros.</p></div>';return;}
-  const icons=['🥇','🥈','🥉'];
-  const rows=sorted.map(([name,s],i)=>{
-    const pa=s.atend>0?Math.round(s.prod/s.atend):0;
-    const ph=s.horas>0?Math.round(s.prod/s.horas):0;
-    const pd=s.prod>0?Math.round(s.pdW/s.prod):0;
-    const pct=Math.max(4,(s.prod/max*100).toFixed(0));
-    const rank=i<3?icons[i]:`<span style="font-size:11px;color:var(--muted);font-weight:600">${i+1}</span>`;
-    const badge=showSpec?`<span class="sb ${specOf({specialty:s.specialty})}" style="margin-left:5px;font-size:10px">${specOf({specialty:s.specialty})==='clinico'?'Clínico':'Ortod.'}</span>`:'';
-    return `<tr>
+      const byU = {}; all.forEach(r => { if (r.unit) byU[r.unit] = (byU[r.unit] || 0) + r.prod; });
+      const uS = Object.entries(byU).sort((a, b) => b[1] - a[1]);
+      dc('g-unit');
+      CH['g-unit'] = new Chart(document.getElementById('ch-g-unit'), { type: 'bar', data: { labels: uS.map(e => e[0]), datasets: [{ data: uS.map(e => e[1]), backgroundColor: uS.map((_, i) => ['#0a4f7f', '#00b4d8', '#2ec4b6', '#48cae4', '#90e0ef'][i % 5]), borderRadius: 7, borderSkipped: false }] }, options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.raw) } } }, scales: { x: { grid: { color: '#e8f0f7' }, ticks: { callback: v => 'R$' + v.toLocaleString('pt-BR'), font: { size: 11 } } }, y: { grid: { display: false }, ticks: { font: { size: 11 } } } } } });
+
+      renderTable('tbl-g', all, 'bm-g', true);
+    }
+
+    // ─── SPECIALTY ────────────────────────────────────────────────
+    function renderSpec(p, data, c1, c2, c3, bc) {
+      const m = calcM(data);
+      st(`${p}-prod`, fmtK(m.prod)); st(`${p}-pa`, fmtK(m.pa)); st(`${p}-ph`, fmtK(m.ph));
+      st(`${p}-pd`, fmtK(m.pd)); st(`${p}-atend`, m.atend.toLocaleString('pt-BR')); st(`${p}-horas`, m.horas.toLocaleString('pt-BR') + 'h');
+
+      const periods = [...new Set(data.map(r => r.periodo))].sort((a, b) => pKey(a).localeCompare(pKey(b)));
+      const bP = {}; data.forEach(r => { bP[r.periodo] = (bP[r.periodo] || 0) + r.prod; });
+      dc(`${p}-mon`);
+      CH[`${p}-mon`] = new Chart(document.getElementById(`ch-${p}-mon`), { type: 'line', data: { labels: periods, datasets: [{ label: 'Produção', data: periods.map(p => bP[p] || 0), borderColor: c1, backgroundColor: c1 + '18', borderWidth: 2.5, pointBackgroundColor: c1, pointRadius: 5, fill: true, tension: 0.4 }] }, options: { responsive: true, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.raw) } } }, scales: { y: { grid: { color: '#e8f0f7' }, ticks: { callback: v => 'R$' + v.toLocaleString('pt-BR'), font: { size: 11 } } }, x: { grid: { display: false }, ticks: { font: { size: 11 } } } } } });
+
+      const bD = {}; data.forEach(r => { bD[r.dentist] = (bD[r.dentist] || 0) + r.prod; });
+      const sD = Object.entries(bD).sort((a, b) => b[1] - a[1]);
+      const palC = ['#0a4f7f', '#1565a8', '#1d82d4', '#00b4d8', '#48cae4', '#90e0ef'];
+      const palO = ['#6b21a8', '#7e22ce', '#9333ea', '#a855f7', '#c084fc', '#e9d5ff'];
+      dc(`${p}-donut`);
+      CH[`${p}-donut`] = new Chart(document.getElementById(`ch-${p}-donut`), { type: 'doughnut', data: { labels: sD.map(e => e[0]), datasets: [{ data: sD.map(e => e[1]), backgroundColor: p === 'c' ? palC : palO, borderWidth: 2, borderColor: '#fff' }] }, options: { responsive: true, cutout: '60%', plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 9, boxWidth: 11 } }, tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.raw) } } } } });
+
+      const ds = {};
+      data.forEach(r => {
+        if (!ds[r.dentist]) ds[r.dentist] = { prod: 0, atend: 0, horas: 0, pdW: 0 };
+        ds[r.dentist].prod += r.prod; ds[r.dentist].atend += r.atend;
+        ds[r.dentist].horas += r.horas; ds[r.dentist].pdW += r.pdia * r.prod;
+      });
+      const names = Object.keys(ds).sort((a, b) => ds[b].prod - ds[a].prod);
+      dc(`${p}-metrics`);
+      CH[`${p}-metrics`] = new Chart(document.getElementById(`ch-${p}-metrics`), {
+        type: 'bar', data: {
+          labels: names, datasets: [
+            { label: 'Prod./Atend.', data: names.map(n => ds[n].atend > 0 ? Math.round(ds[n].prod / ds[n].atend) : 0), backgroundColor: c1, borderRadius: 5 },
+            { label: 'Prod./Hora', data: names.map(n => ds[n].horas > 0 ? Math.round(ds[n].prod / ds[n].horas) : 0), backgroundColor: c2, borderRadius: 5 },
+            { label: 'Prod./Dia', data: names.map(n => ds[n].prod > 0 ? Math.round(ds[n].pdW / ds[n].prod) : 0), backgroundColor: c3, borderRadius: 5 }
+          ]
+        }, options: { responsive: true, scales: { x: { grid: { display: false }, ticks: { font: { size: 11 } } }, y: { grid: { color: '#e8f0f7' }, ticks: { callback: v => 'R$' + v.toLocaleString('pt-BR'), font: { size: 11 } } } }, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12 } }, tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.raw) } } } }
+      });
+
+      renderTable(p === 'c' ? 'tbl-c' : 'tbl-o', data, bc, false);
+    }
+
+    // ─── TABLE ────────────────────────────────────────────────────
+    function renderTable(id, data, bc, showSpec) {
+      const ds = {};
+      data.forEach(r => {
+        if (!ds[r.dentist]) ds[r.dentist] = { prod: 0, atend: 0, horas: 0, pdW: 0, units: new Set(), specialty: r.specialty };
+        ds[r.dentist].prod += r.prod; ds[r.dentist].atend += r.atend;
+        ds[r.dentist].horas += r.horas; ds[r.dentist].pdW += r.pdia * r.prod;
+        if (r.unit) ds[r.dentist].units.add(r.unit);
+      });
+      const sorted = Object.entries(ds).sort((a, b) => {
+        const pdA = a[1].prod > 0 ? a[1].pdW / a[1].prod : 0;
+        const pdB = b[1].prod > 0 ? b[1].pdW / b[1].prod : 0;
+        return pdB - pdA;
+      });
+      const max = sorted[0]?.[1].prod || 1;
+      if (!sorted.length) { document.getElementById(id).innerHTML = '<div class="empty"><div class="ic">🔍</div><h3>Sem resultados</h3><p>Ajuste os filtros.</p></div>'; return; }
+      const icons = ['🥇', '🥈', '🥉'];
+      const rows = sorted.map(([name, s], i) => {
+        const pa = s.atend > 0 ? Math.round(s.prod / s.atend) : 0;
+        const ph = s.horas > 0 ? Math.round(s.prod / s.horas) : 0;
+        const pd = s.prod > 0 ? Math.round(s.pdW / s.prod) : 0;
+        const pct = Math.max(4, (s.prod / max * 100).toFixed(0));
+        const rank = i < 3 ? icons[i] : `<span style="font-size:11px;color:var(--muted);font-weight:600">${i + 1}</span>`;
+        const badge = showSpec ? `<span class="sb ${specOf({ specialty: s.specialty })}" style="margin-left:5px;font-size:10px">${specOf({ specialty: s.specialty }) === 'clinico' ? 'Clínico' : 'Ortod.'}</span>` : '';
+        return `<tr>
       <td style="font-size:15px">${rank}</td>
       <td><strong>${name}</strong>${badge}</td>
-      <td style="color:var(--muted);font-size:11px">${[...s.units].join(', ')||'—'}</td>
+      <td style="color:var(--muted);font-size:11px">${[...s.units].join(', ') || '—'}</td>
       <td><strong>${fmt(s.prod)}</strong></td>
       <td>${s.atend.toLocaleString('pt-BR')}</td>
       <td>${fmt(pa)}</td>
@@ -625,13 +1392,14 @@ function renderTable(id,data,bc,showSpec){
       <td style="font-weight:700;color:var(--primary)">${fmt(pd)}</td>
       <td style="width:100px"><div class="bm ${bc}" style="width:${pct}%"></div></td>
     </tr>`;
-  }).join('');
-  document.getElementById(id).innerHTML=`<table><thead><tr>
+      }).join('');
+      document.getElementById(id).innerHTML = `<table><thead><tr>
     <th>#</th><th>Dentista</th><th>Unidade</th><th>Produção</th>
     <th>Atend.</th><th>Prod./Atend.</th><th>Hrs.</th><th>Prod./Hora</th>
     <th style="color:var(--primary)">Prod./Dia ↓</th><th>Share</th>
   </tr></thead><tbody>${rows}</tbody></table>`;
-}
-</script>
+    }
+  </script>
 </body>
+
 </html>
