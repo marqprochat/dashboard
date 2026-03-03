@@ -54,51 +54,34 @@ main { padding: 22px 28px; max-width: 1380px; margin: 0 auto; }
 .tab-content.active { display: block; animation: fadeIn 0.2s ease; }
 @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
 
-/* ── CONNECT PANEL ── */
-.connect-panel {
+/* ── SYNC PANEL ── */
+.sync-panel {
   background: var(--surface); border-radius: var(--radius);
   border: 1px solid var(--border); box-shadow: var(--shadow);
-  margin-bottom: 18px; overflow: hidden;
+  margin-bottom: 18px; padding: 20px 24px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
 }
-.connect-tabs { display: flex; border-bottom: 1px solid var(--border); }
-.ctab { flex: 1; padding: 12px 16px; border: none; background: transparent; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: var(--muted); border-bottom: 3px solid transparent; margin-bottom: -1px; transition: all 0.2s; }
-.ctab.active { color: var(--primary); border-bottom-color: var(--accent); background: #f5f9ff; }
-.ctab:hover:not(.active) { background: var(--surface2); }
-.connect-body { padding: 18px 22px; }
-.cmode { display: none; }
-.cmode.active { display: block; }
-
-.input-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.input-row label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.9px; white-space: nowrap; }
-.input-row input[type="text"] { flex: 1; min-width: 240px; border: 1.5px solid var(--border); border-radius: 9px; padding: 8px 13px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text); outline: none; transition: border-color 0.2s; }
-.input-row input[type="text"]:focus { border-color: var(--accent); }
-
-textarea#csv-paste { width: 100%; border: 1.5px solid var(--border); border-radius: 9px; padding: 10px 13px; font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text); outline: none; resize: vertical; min-height: 110px; transition: border-color 0.2s; }
-textarea#csv-paste:focus { border-color: var(--accent); }
-.paste-hint { font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.6; }
-.paste-hint strong { color: var(--text); }
-.paste-hint code { background: rgba(0,180,216,0.12); padding: 1px 5px; border-radius: 4px; font-size: 11px; color: var(--primary); }
+.sync-info { display: flex; align-items: center; gap: 12px; }
+.sync-icon { width: 42px; height: 42px; background: linear-gradient(135deg, var(--accent), var(--green)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.sync-text h3 { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.sync-text p { font-size: 12px; color: var(--muted); }
 
 .btn { background: var(--primary); color: #fff; border: none; border-radius: 9px; padding: 9px 16px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; white-space: nowrap; }
 .btn:hover { background: #0c5f9a; }
 .btn:active { transform: scale(0.97); }
+.btn-sync { background: linear-gradient(135deg, var(--primary), var(--accent)); padding: 11px 24px; font-size: 14px; border-radius: 10px; display: flex; align-items: center; gap: 8px; }
+.btn-sync:hover { background: linear-gradient(135deg, #0c5f9a, #0096c7); }
+.btn-sync .sync-spinner { display: none; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: rot 0.8s linear infinite; }
+.btn-sync.loading .sync-spinner { display: inline-block; }
+.btn-sync.loading .sync-label { display: none; }
 .btn-ghost { background: transparent; color: var(--primary); border: 1.5px solid var(--border); }
 .btn-ghost:hover { background: var(--surface2); }
-.btn-demo { background: var(--surface2); color: var(--primary); border: 1.5px solid var(--border); }
-.btn-demo:hover { background: #d5e8f7; }
 
 /* ── ERROR BOX ── */
-.error-box { display:none; background: #fff5f5; border: 1.5px solid #fca5a5; border-radius: 10px; padding: 14px 18px; margin-top: 12px; font-size: 12px; line-height: 1.7; color: #7f1d1d; }
+.error-box { display:none; background: #fff5f5; border: 1.5px solid #fca5a5; border-radius: 10px; padding: 14px 18px; margin-top: 12px; font-size: 12px; line-height: 1.7; color: #7f1d1d; width: 100%; }
 .error-box strong { color: #dc2626; }
 .error-box .err-steps { margin-top: 8px; padding-left: 16px; }
 .error-box .err-steps li { margin-bottom: 3px; }
-
-/* ── STEP GUIDE ── */
-.step-guide { display: flex; gap: 12px; margin-top: 10px; flex-wrap: wrap; }
-.step { display: flex; align-items: flex-start; gap: 8px; flex: 1; min-width: 180px; background: var(--surface2); border-radius: 10px; padding: 10px 12px; }
-.step-num { width: 22px; height: 22px; border-radius: 50%; background: var(--primary); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
-.step-txt { font-size: 11px; color: var(--text); line-height: 1.5; }
-.step-txt strong { display: block; font-size: 12px; margin-bottom: 1px; }
 
 /* FILTERS */
 .filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; align-items: flex-end; background: var(--surface); border-radius: var(--radius); padding: 14px 20px; border: 1px solid var(--border); box-shadow: var(--shadow); }
@@ -205,55 +188,20 @@ tbody tr:hover td { background:#f5f9ff; }
 
 <main>
 
-  <!-- ══ CONNECT PANEL ══ -->
-  <div class="connect-panel">
-    <div class="connect-tabs">
-      <button class="ctab active" onclick="showCMode('link')" id="ctab-link">🔗 Carregar via Link</button>
-      <button class="ctab"        onclick="showCMode('paste')" id="ctab-paste">📋 Colar CSV Manualmente</button>
-      <button class="ctab"        onclick="showCMode('demo')" id="ctab-demo">🎲 Usar Dados Demo</button>
-    </div>
-
-    <!-- MODO LINK -->
-    <div class="connect-body">
-      <div class="cmode active" id="cmode-link">
-        <div class="input-row">
-          <label>Link Google Sheets</label>
-          <input type="text" id="sheet-url" placeholder="Cole aqui o link compartilhado da planilha do Google..."/>
-          <button class="btn" onclick="loadData()">Carregar</button>
-        </div>
-        <div id="error-box" class="error-box">
-          <!-- Conteúdo gerado via JS em caso de erro -->
-        </div>
-        <div class="step-guide">
-          <div class="step"><div class="step-num">1</div><div class="step-txt"><strong>Abra o Google Sheets</strong>Clique no botão "Compartilhar" no canto direito</div></div>
-          <div class="step"><div class="step-num">2</div><div class="step-txt"><strong>Mude o Acesso</strong>Altere para "Qualquer pessoa com o link"</div></div>
-          <div class="step"><div class="step-num">3</div><div class="step-txt"><strong>Copie o Link</strong>Clique em "Copiar link" e conclua</div></div>
-          <div class="step"><div class="step-num">4</div><div class="step-txt"><strong>Cole o link acima</strong>e clique em Carregar para visualizar</div></div>
-        </div>
-      </div>
-
-      <!-- MODO PASTE -->
-      <div class="cmode" id="cmode-paste">
-        <textarea id="csv-paste" placeholder="Período,Dentista,Unidade,Atendimento,Produção,Produção/Atendimento,Horas Trabalhadas,Especialidade
-Jan/2025,Dr. João,Unidade Centro,85,42500,500,160,Clínico
-..."></textarea>
-        <div class="paste-hint">
-          <strong>Como exportar o CSV do Google Sheets:</strong>
-          Arquivo → Fazer download → <strong>Valores separados por vírgula (.csv)</strong> → abra o arquivo no Bloco de Notas ou TextEdit → selecione tudo (<code>Ctrl+A</code>) → copie (<code>Ctrl+C</code>) → cole acima.<br>
-          <strong>Colunas esperadas:</strong> <code>Período</code> · <code>Dentista</code> · <code>Unidade</code> · <code>Atendimento</code> · <code>Produção</code> · <code>Produção/Atendimento</code> · <code>Horas Trabalhadas</code> · <code>Especialidade</code>
-        </div>
-        <div style="margin-top:12px;display:flex;gap:8px">
-          <button class="btn" onclick="loadPaste()">📊 Processar CSV</button>
-          <button class="btn btn-ghost" onclick="document.getElementById('csv-paste').value=''">Limpar</button>
-        </div>
-      </div>
-
-      <!-- MODO DEMO -->
-      <div class="cmode" id="cmode-demo">
-        <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Carregue dados de demonstração para explorar todas as funcionalidades do dashboard sem precisar de uma planilha real.</p>
-        <button class="btn" onclick="loadDemo()">🎲 Carregar Dados Demo</button>
+  <!-- ══ SYNC PANEL ══ -->
+  <div class="sync-panel">
+    <div class="sync-info">
+      <div class="sync-icon">📊</div>
+      <div class="sync-text">
+        <h3>Dados de Produção</h3>
+        <p>Clique no botão para buscar os dados atualizados da planilha</p>
       </div>
     </div>
+    <button class="btn btn-sync" id="btn-sync" onclick="loadData()">
+      <span class="sync-spinner"></span>
+      <span class="sync-label">🔄 Atualizar Dados</span>
+    </button>
+    <div id="error-box" class="error-box"></div>
   </div>
 
   <!-- FILTERS -->
@@ -385,15 +333,6 @@ Jan/2025,Dr. João,Unidade Centro,85,42500,500,160,Clínico
 let rawData = [];
 const CH = {};
 
-// ─── CONNECT TABS ─────────────────────────────────────────────
-function showCMode(mode) {
-  document.querySelectorAll('.cmode').forEach(e=>e.classList.remove('active'));
-  document.querySelectorAll('.ctab').forEach(e=>e.classList.remove('active'));
-  document.getElementById('cmode-'+mode).classList.add('active');
-  document.getElementById('ctab-'+mode).classList.add('active');
-  document.getElementById('error-box').style.display='none';
-}
-
 // ─── TABS ─────────────────────────────────────────────────────
 function switchTab(t) {
   document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
@@ -402,61 +341,19 @@ function switchTab(t) {
   document.querySelector('.tab-'+t).classList.add('active');
 }
 
-// ─── DEMO ─────────────────────────────────────────────────────
-function loadDemo() {
-  const clinicos=['Dr. Lucas Mendes','Dra. Ana Paula','Dr. Rafael Souza','Dra. Carla Neves'];
-  const orthos  =['Dra. Juliana Costa','Dr. Marcos Lima','Dra. Beatriz Ramos'];
-  const units   =['Unidade Centro','Unidade Sul','Unidade Norte'];
-  const MONTHS  =['Jan','Fev','Mar','Abr','Mai','Jun'];
-  const YEAR    = 2025;
-  const data=[];
-  MONTHS.forEach(mon=>{
-    const periodo=`${mon}/${YEAR}`;
-    clinicos.forEach(dentist=>{
-      const unit=units[Math.floor(Math.random()*units.length)];
-      const atend=60+Math.floor(Math.random()*60);
-      const prod=atend*(180+Math.floor(Math.random()*220));
-      const horas=140+Math.floor(Math.random()*60);
-      const dias=18+Math.floor(Math.random()*6);
-      data.push({periodo,dentist,unit,atend,prod,pa:Math.round(prod/atend),horas,phora:Math.round(prod/horas),pdia:Math.round(prod/dias),specialty:'Clínico'});
-    });
-    orthos.forEach(dentist=>{
-      const unit=units[Math.floor(Math.random()*units.length)];
-      const atend=40+Math.floor(Math.random()*40);
-      const prod=atend*(400+Math.floor(Math.random()*500));
-      const horas=120+Math.floor(Math.random()*60);
-      const dias=16+Math.floor(Math.random()*6);
-      data.push({periodo,dentist,unit,atend,prod,pa:Math.round(prod/atend),horas,phora:Math.round(prod/horas),pdia:Math.round(prod/dias),specialty:'Ortodontia'});
-    });
-  });
-  rawData=data;
-  afterLoad('Demo Ativo');
-}
+// ─── LOAD DATA (GOOGLE SHEETS FIXO) ──────────────────────────
+const SHEET_ID = '1BDyHqn0J90HPmJiCHHawYS4IxfH8dhe8x5YMQO_EGMI';
+const SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=0`;
 
-// ─── LOAD LINK (ATUALIZADO PARA GVIZ - SEM CORS) ──────────────
 async function loadData() {
-  const url=document.getElementById('sheet-url').value.trim();
-  if(!url){alert('Cole o link da planilha primeiro.');return;}
-  
-  let csvUrl=url;
-  
-  // Extrai o ID da planilha se for um link válido do Google Sheets
-  if(url.includes('docs.google.com/spreadsheets')){
-    const idM = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
-    const gidM = url.match(/gid=(\d+)/);
-    
-    // MÁGICA AQUI: Usando o endpoint gviz/tq ao invés do export?format=csv
-    if(idM) {
-      csvUrl = `https://docs.google.com/spreadsheets/d/${idM[1]}/gviz/tq?tqx=out:csv&gid=${gidM ? gidM[1] : '0'}`;
-    }
-  }
-
+  const btn = document.getElementById('btn-sync');
+  btn.classList.add('loading');
   setStatus('Carregando...','#fbbf24');
   const errorBox = document.getElementById('error-box');
   errorBox.style.display='none';
 
   try {
-    const r = await fetch(csvUrl);
+    const r = await fetch(SHEET_CSV_URL);
     
     if(!r.ok) {
         throw new Error("Erro na rede ou link inválido.");
@@ -464,7 +361,6 @@ async function loadData() {
     
     const text = await r.text();
     
-    // O gviz retorna HTML se a planilha for privada (pede login). Validamos isso aqui:
     if(text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
         throw new Error("Planilha privada! Altere o acesso para 'Qualquer pessoa com o link'.");
     }
@@ -474,32 +370,19 @@ async function loadData() {
 
   } catch(e) {
     setStatus('Erro de acesso','#ef4444');
-    
-    // Atualiza a caixa de erro dinamicamente para orientar o usuário
     errorBox.innerHTML = `
       <strong>⚠️ Não foi possível carregar a planilha.</strong><br><br>
       Detalhe do erro: ${e.message}<br><br>
       <strong>Verifique:</strong>
       <ul class="err-steps">
-        <li>A planilha está acessível para <strong>"Qualquer pessoa com o link"</strong>? (O botão azul de compartilhar).</li>
-        <li>O link colado é realmente do Google Sheets?</li>
+        <li>A planilha está acessível para <strong>"Qualquer pessoa com o link"</strong>?</li>
+        <li>Verifique sua conexão com a internet.</li>
       </ul>
-      <br>
-      <strong>💡 Solução manual:</strong> se persistir, use a aba <strong>"Colar CSV Manualmente"</strong> ao lado.
     `;
     errorBox.style.display='block';
+  } finally {
+    btn.classList.remove('loading');
   }
-}
-
-// ─── LOAD PASTE ───────────────────────────────────────────────
-function loadPaste() {
-  const text=document.getElementById('csv-paste').value.trim();
-  if(!text){alert('Cole o conteúdo CSV primeiro.');return;}
-  try {
-    parseCSV(text);
-    if(!rawData.length) throw new Error('Nenhuma linha válida encontrada. Verifique o formato e os nomes das colunas.');
-    afterLoad('CSV Carregado');
-  } catch(e) { alert('Erro ao processar CSV:\n'+e.message); }
 }
 
 // ─── PARSE CSV ────────────────────────────────────────────────
