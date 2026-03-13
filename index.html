@@ -303,7 +303,78 @@
       background: var(--surface2);
     }
 
-    /* ── ERROR BOX ── */
+    /* ── LOGIN FORM ── */
+    .login-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .login-form {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 40px;
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .login-form h2 {
+      margin-bottom: 20px;
+      color: var(--primary);
+    }
+
+    .login-form input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      font-size: 14px;
+    }
+
+    .login-form button {
+      width: 100%;
+      padding: 12px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .login-form button:hover {
+      background: #0c5f9a;
+    }
+
+    .user-management {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .user-management h3 {
+      margin-bottom: 10px;
+    }
+
+    .user-management form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .user-management select[multiple] {
+      height: 100px;
+    }
     .error-box {
       display: none;
       background: #fff5f5;
@@ -752,6 +823,17 @@
 
 <body>
 
+  <!-- LOGIN FORM -->
+  <div class="login-container" id="login-container">
+    <div class="login-form">
+      <h2>Login</h2>
+      <input type="text" id="username" placeholder="Usuário" required>
+      <input type="password" id="password" placeholder="Senha" required>
+      <button onclick="login()">Entrar</button>
+      <div id="login-error" style="color: red; margin-top: 10px; display: none;">Usuário ou senha incorretos</div>
+    </div>
+  </div>
+
   <header>
     <div class="logo">
       <div class="logo-icon">🦷</div>
@@ -766,6 +848,7 @@
         <span class="dot" id="sdot" style="background:#94a3b8"></span>
         <span id="stxt">Aguardando dados</span>
       </div>
+      <button class="btn btn-ghost" onclick="logout()">Sair</button>
     </div>
   </header>
 
@@ -793,6 +876,22 @@
         <span class="sync-label">🔄 Atualizar Dados</span>
       </button>
       <div id="error-box" class="error-box"></div>
+    </div>
+
+    <!-- USER MANAGEMENT (ADMIN ONLY) -->
+    <div class="user-management" id="user-management">
+      <h3>Cadastrar Usuário</h3>
+      <form id="user-form">
+        <input type="text" id="new-username" placeholder="Nome de usuário" required>
+        <input type="password" id="new-password" placeholder="Senha" required>
+        <label>Unidades:</label>
+        <select id="user-units" multiple required>
+          <!-- Options will be populated -->
+        </select>
+        <button type="submit">Cadastrar</button>
+      </form>
+      <h3>Usuários Cadastrados</h3>
+      <ul id="user-list"></ul>
     </div>
 
     <!-- FILTERS -->
@@ -1084,7 +1183,112 @@
 
   <script>
     let rawData = [];
+    let currentUser = null;
     const CH = {};
+
+    // Check if logged in
+    function checkLogin() {
+      const loggedUser = localStorage.getItem('currentUser');
+      if (loggedUser) {
+        currentUser = JSON.parse(loggedUser);
+        document.getElementById('login-container').style.display = 'none';
+        if (currentUser.username === 'admin') {
+          document.getElementById('user-management').style.display = 'block';
+          displayUsers();
+        }
+        loadData(); // Load data after login
+      }
+    }
+
+    // Login function
+    async function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const result = await response.json();
+        if (result.success) {
+          currentUser = result.user;
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          document.getElementById('login-container').style.display = 'none';
+          if (currentUser.username === 'admin') {
+            document.getElementById('user-management').style.display = 'block';
+            displayUsers();
+          }
+          loadData();
+        } else {
+          document.getElementById('login-error').style.display = 'block';
+        }
+      } catch (err) {
+        console.error('Login error:', err);
+        document.getElementById('login-error').style.display = 'block';
+      }
+    }
+
+    // Logout function (add to header later)
+    function logout() {
+      localStorage.removeItem('currentUser');
+      location.reload();
+    }
+
+    // Populate units for user registration
+    function populateUserUnits() {
+      const unitSelect = document.getElementById('user-units');
+      unitSelect.innerHTML = '';
+      const uniqueUnits = [...new Set(rawData.map(d => d.unit))].sort();
+      uniqueUnits.forEach(unit => {
+        const option = document.createElement('option');
+        option.value = unit;
+        option.textContent = unit;
+        unitSelect.appendChild(option);
+      });
+    }
+
+    // Register user
+    document.getElementById('user-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const username = document.getElementById('new-username').value;
+      const password = document.getElementById('new-password').value;
+      const units = Array.from(document.getElementById('user-units').selectedOptions).map(o => o.value);
+      try {
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password, units })
+        });
+        const result = await response.json();
+        if (result.success) {
+          displayUsers();
+          document.getElementById('user-form').reset();
+        } else {
+          alert('Erro: ' + result.error);
+        }
+      } catch (err) {
+        console.error('Register error:', err);
+        alert('Erro ao cadastrar usuário');
+      }
+    });
+
+    // Display users
+    async function displayUsers() {
+      try {
+        const response = await fetch('/api/users');
+        const users = await response.json();
+        const userList = document.getElementById('user-list');
+        userList.innerHTML = '';
+        users.forEach(user => {
+          const li = document.createElement('li');
+          li.textContent = `${user.username}: ${user.units.join(', ')}`;
+          userList.appendChild(li);
+        });
+      } catch (err) {
+        console.error('Display users error:', err);
+      }
+    }
 
     // ─── TABS ─────────────────────────────────────────────────────
     function switchTab(t) {
@@ -1198,6 +1402,9 @@
       document.getElementById('filters').style.display = 'flex';
       document.getElementById('last-updated').textContent = 'Atualizado: ' + new Date().toLocaleTimeString('pt-BR');
       populateFilters(true);
+      if (currentUser && currentUser.username === 'admin') {
+        populateUserUnits();
+      }
       renderAll();
     }
     function setStatus(t, c) { document.getElementById('stxt').textContent = t; document.getElementById('sdot').style.background = c; }
@@ -1234,10 +1441,16 @@
     const NOW_YEAR = new Date().getFullYear();
 
     function populateFilters(setDefaults) {
-      const units = [...new Set(rawData.map(r => r.unit).filter(Boolean))].sort();
-      const dentists = [...new Set(rawData.map(r => r.dentist))].sort();
-      const months = [...new Set(rawData.map(r => parsePeriodo(r.periodo).mes).filter(m => m > 0))].sort((a, b) => a - b);
-      const years = [...new Set(rawData.map(r => parsePeriodo(r.periodo).ano).filter(y => y > 0))].sort((a, b) => a - b);
+      // Filter data based on user units
+      let userData = rawData;
+      if (currentUser && currentUser.units.length > 0) {
+        userData = rawData.filter(r => currentUser.units.includes(r.unit));
+      }
+
+      const units = [...new Set(userData.map(r => r.unit).filter(Boolean))].sort();
+      const dentists = [...new Set(userData.map(r => r.dentist))].sort();
+      const months = [...new Set(userData.map(r => parsePeriodo(r.periodo).mes).filter(m => m > 0))].sort((a, b) => a - b);
+      const years = [...new Set(userData.map(r => parsePeriodo(r.periodo).ano).filter(y => y > 0))].sort((a, b) => a - b);
 
       const monthItems = months.map(m => ({ v: String(m), l: MONTH_NAMES[m] }));
       const yearItems = years.map(y => ({ v: String(y), l: String(y) }));
@@ -1262,8 +1475,8 @@
         }
       }
 
-      document.getElementById('pill-c').textContent = new Set(rawData.filter(r => specOf(r) === 'clinico').map(r => r.dentist)).size;
-      document.getElementById('pill-o').textContent = new Set(rawData.filter(r => specOf(r) === 'ortho').map(r => r.dentist)).size;
+      document.getElementById('pill-c').textContent = new Set(userData.filter(r => specOf(r) === 'clinico').map(r => r.dentist)).size;
+      document.getElementById('pill-o').textContent = new Set(userData.filter(r => specOf(r) === 'ortho').map(r => r.dentist)).size;
     }
     function fillSel(id, items, ph) {
       const s = document.getElementById(id);
@@ -1286,6 +1499,8 @@
       const endKey = (yEnd || mEnd) ? `${yEnd || '9999'}-${(mEnd || '12').padStart(2, '0')}` : '';
 
       return rawData.filter(r => {
+        // User units filter
+        if (currentUser && currentUser.units.length > 0 && !currentUser.units.includes(r.unit)) return false;
         if (spec && specOf(r) !== spec) return false;
         if (unit && r.unit !== unit) return false;
         if (dent && r.dentist !== dent) return false;
@@ -1447,6 +1662,7 @@
     <th style="color:var(--primary)">Prod./Dia ↓</th><th>Share</th>
   </tr></thead><tbody>${rows}</tbody></table>`;
     }
+    checkLogin();
   </script>
 </body>
 
