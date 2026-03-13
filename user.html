@@ -307,6 +307,21 @@
       <button class="btn" id="btn-register">Cadastrar usuário</button>
 
       <div class="card" style="margin-top: 18px;">
+        <h2>Alterar Senha do Administrador</h2>
+        <div class="form-grid">
+          <div>
+            <label for="admin-old-password">Senha Atual</label>
+            <input type="password" id="admin-old-password" placeholder="Senha atual" required>
+          </div>
+          <div>
+            <label for="admin-new-password">Nova Senha</label>
+            <input type="password" id="admin-new-password" placeholder="Nova senha" required>
+          </div>
+        </div>
+        <button class="btn" id="btn-change-admin-password">Alterar Senha</button>
+      </div>
+
+      <div class="card" style="margin-top: 18px;">
         <h2>Usuários Cadastrados</h2>
         <ul class="user-list" id="user-list"></ul>
       </div>
@@ -400,6 +415,63 @@
       });
     }
 
+    async function changePassword(targetUsername) {
+      const newPassword = prompt(`Digite a nova senha para ${targetUsername}:`);
+      if (!newPassword) return;
+      try {
+        const response = await fetch('/api/change-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            currentUsername: currentUser.username,
+            targetUsername,
+            newPassword
+          })
+        });
+        const result = await response.json();
+        if (result.success) {
+          alert('Senha alterada com sucesso!');
+        } else {
+          alert('Erro: ' + result.error);
+        }
+      } catch (err) {
+        console.error('Change password error:', err);
+        alert('Erro ao alterar senha');
+      }
+    }
+
+    async function changeAdminPassword() {
+      const oldPassword = document.getElementById('admin-old-password').value;
+      const newPassword = document.getElementById('admin-new-password').value;
+      if (!oldPassword || !newPassword) {
+        alert('Preencha todos os campos');
+        return;
+      }
+      try {
+        const response = await fetch('/api/change-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            currentUsername: currentUser.username,
+            targetUsername: currentUser.username,
+            newPassword,
+            oldPassword
+          })
+        });
+        const result = await response.json();
+        if (result.success) {
+          alert('Senha alterada com sucesso!');
+          document.getElementById('admin-old-password').value = '';
+          document.getElementById('admin-new-password').value = '';
+        } else {
+          alert('Erro: ' + result.error);
+        }
+      } catch (err) {
+        console.error('Change admin password error:', err);
+        alert('Erro ao alterar senha');
+      }
+    }
+
     async function displayUsers() {
       const userList = document.getElementById('user-list');
       if (!userList) return;
@@ -409,7 +481,7 @@
         userList.innerHTML = '';
         users.forEach(user => {
           const li = document.createElement('li');
-          li.innerHTML = `<span>${user.username}</span><span>${user.units.join(', ')}</span>`;
+          li.innerHTML = `<span>${user.username}</span><span>${user.units.join(', ')}</span><button class="btn btn-ghost" onclick="changePassword('${user.username}')">Alterar Senha</button>`;
           userList.appendChild(li);
         });
       } catch (err) {
@@ -494,6 +566,7 @@
     }
 
     document.getElementById('btn-register').addEventListener('click', registerUser);
+    document.getElementById('btn-change-admin-password').addEventListener('click', changeAdminPassword);
 
     checkLogin();
   </script>

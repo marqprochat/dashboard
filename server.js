@@ -114,6 +114,53 @@ app.get('/api/users', (req, res) => {
   }
 });
 
+app.post('/api/change-password', (req, res) => {
+  const { currentUsername, targetUsername, newPassword, oldPassword } = req.body;
+  if (!currentUsername || !targetUsername || !newPassword) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+  if (currentUsername === targetUsername) {
+    // Changing own password
+    if (!oldPassword) {
+      return res.status(400).json({ error: 'Old password required for changing own password' });
+    }
+    // Verify old password
+    const verifyQuery = process.env.DATABASE_URL ?
+      "SELECT * FROM users WHERE username = $1 AND password = $2" :
+      "SELECT * FROM users WHERE username = ? AND password = ?";
+    const params = process.env.DATABASE_URL ? [currentUsername, oldPassword] : [currentUsername, oldPassword];
+    (process.env.DATABASE_URL ? db.query : db.get).call(db, verifyQuery, params, (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (!result || (process.env.DATABASE_URL && !result.rows.length)) {
+        return res.status(400).json({ error: 'Old password incorrect' });
+      }
+      // Update password
+      updatePassword();
+    });
+  } else {
+    // Changing others' password
+    if (currentUsername !== 'admin') {
+      return res.status(403).json({ error: 'Only admin can change other users passwords' });
+    }
+    updatePassword();
+  }
+
+  function updatePassword() {
+    const updateQuery = process.env.DATABASE_URL ?
+      "UPDATE users SET password = $1 WHERE username = $2" :
+      "UPDATE users SET password = ? WHERE username = ?";
+    const params = process.env.DATABASE_URL ? [newPassword, targetUsername] : [newPassword, targetUsername];
+    (process.env.DATABASE_URL ? db.query : db.run).call(db, updateQuery, params, (err) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json({ success: true });
+    });
+  }
+});
+
 // Serve index.html for root
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
