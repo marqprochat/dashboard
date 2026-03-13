@@ -161,6 +161,35 @@ app.post('/api/change-password', (req, res) => {
   }
 });
 
+// Delete user endpoint
+app.delete('/api/users/:username', (req, res) => {
+  const { username } = req.params;
+  if (username === 'admin') {
+    return res.status(400).json({ error: 'Cannot delete admin user' });
+  }
+  if (process.env.DATABASE_URL) {
+    db.query("DELETE FROM users WHERE username = $1", [username], (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (result.rowCount === 0) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      res.json({ success: true });
+    });
+  } else {
+    db.run("DELETE FROM users WHERE username = ?", [username], function(err) {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (this.changes === 0) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      res.json({ success: true });
+    });
+  }
+});
+
 // Serve index.html for root
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));

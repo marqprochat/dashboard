@@ -242,9 +242,20 @@
       align-items: center;
     }
 
-    .user-list li span {
+    .user-list li span:first-child {
       font-weight: 600;
       color: var(--text);
+      flex: 1;
+    }
+
+    .user-list li span:nth-child(2) {
+      color: var(--muted);
+      flex: 2;
+    }
+
+    .user-list li div {
+      display: flex;
+      gap: 8px;
     }
 
     @media (max-width: 860px) {
@@ -415,7 +426,23 @@
       });
     }
 
-    async function changePassword(targetUsername) {
+    async function deleteUser(username) {
+      if (!confirm(`Tem certeza que deseja excluir o usuário ${username}?`)) return;
+      try {
+        const response = await fetch(`/api/users/${username}`, {
+          method: 'DELETE'
+        });
+        const result = await response.json();
+        if (result.success) {
+          displayUsers();
+        } else {
+          alert('Erro: ' + result.error);
+        }
+      } catch (err) {
+        console.error('Delete user error:', err);
+        alert('Erro ao excluir usuário');
+      }
+    }
       const newPassword = prompt(`Digite a nova senha para ${targetUsername}:`);
       if (!newPassword) return;
       try {
@@ -481,7 +508,7 @@
         userList.innerHTML = '';
         users.forEach(user => {
           const li = document.createElement('li');
-          li.innerHTML = `<span>${user.username}</span><span>${user.units.join(', ')}</span><button class="btn btn-ghost" onclick="changePassword('${user.username}')">Alterar Senha</button>`;
+          li.innerHTML = `<span>${user.username}</span><span>${user.units.join(', ')}</span><div><button class="btn btn-ghost" onclick="changePassword('${user.username}')">Alterar Senha</button><button class="btn btn-ghost" style="background: #ff6b6b; color: white; margin-left: 8px;" onclick="deleteUser('${user.username}')">Excluir</button></div>`;
           userList.appendChild(li);
         });
       } catch (err) {
