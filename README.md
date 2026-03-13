@@ -24,6 +24,8 @@ Dashboard de Produção para a clínica Dentalkids.
 
 ## Usuários
 
-Os usuários são armazenados em um banco SQLite (`users.db`) no servidor, garantindo persistência em qualquer dispositivo que acesse o dashboard.
+Os usuários são armazenados em um banco de dados. Para produção no EasyPanel, use PostgreSQL configurado na plataforma (DATABASE_URL será fornecida automaticamente). Para desenvolvimento local, usa SQLite (`users.db`).
+
+Para garantir persistência, use um banco de dados gerenciado no EasyPanel.
 
 - Admin padrão: usuário `admin`, senha `admin`
