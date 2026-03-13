@@ -848,6 +848,7 @@
         <span class="dot" id="sdot" style="background:#94a3b8"></span>
         <span id="stxt">Aguardando dados</span>
       </div>
+      <button class="btn btn-ghost" id="btn-users" style="display:none" onclick="goToUsers()">Usuários</button>
       <button class="btn btn-ghost" onclick="logout()">Sair</button>
     </div>
   </header>
@@ -879,20 +880,7 @@
     </div>
 
     <!-- USER MANAGEMENT (ADMIN ONLY) -->
-    <div class="user-management" id="user-management">
-      <h3>Cadastrar Usuário</h3>
-      <form id="user-form">
-        <input type="text" id="new-username" placeholder="Nome de usuário" required>
-        <input type="password" id="new-password" placeholder="Senha" required>
-        <label>Unidades:</label>
-        <select id="user-units" multiple required>
-          <!-- Options will be populated -->
-        </select>
-        <button type="submit">Cadastrar</button>
-      </form>
-      <h3>Usuários Cadastrados</h3>
-      <ul id="user-list"></ul>
-    </div>
+    <!-- Gerencie usuários em: /user.html -->
 
     <!-- FILTERS -->
     <div class="filters" id="filters" style="display:none">
@@ -1189,14 +1177,14 @@
     // Check if logged in
     function checkLogin() {
       const loggedUser = localStorage.getItem('currentUser');
+      const usersBtn = document.getElementById('btn-users');
       if (loggedUser) {
         currentUser = JSON.parse(loggedUser);
         document.getElementById('login-container').style.display = 'none';
-        if (currentUser.username === 'admin') {
-          document.getElementById('user-management').style.display = 'block';
-          displayUsers();
-        }
+        if (usersBtn) usersBtn.style.display = currentUser.username === 'admin' ? 'inline-flex' : 'none';
         loadData(); // Load data after login
+      } else {
+        if (usersBtn) usersBtn.style.display = 'none';
       }
     }
 
@@ -1215,10 +1203,8 @@
           currentUser = result.user;
           localStorage.setItem('currentUser', JSON.stringify(currentUser));
           document.getElementById('login-container').style.display = 'none';
-          if (currentUser.username === 'admin') {
-            document.getElementById('user-management').style.display = 'block';
-            displayUsers();
-          }
+          const usersBtn = document.getElementById('btn-users');
+          if (usersBtn) usersBtn.style.display = currentUser.username === 'admin' ? 'inline-flex' : 'none';
           loadData();
         } else {
           document.getElementById('login-error').style.display = 'block';
@@ -1232,12 +1218,17 @@
     // Logout function (add to header later)
     function logout() {
       localStorage.removeItem('currentUser');
-      location.reload();
+      location.href = '/';
+    }
+
+    function goToUsers() {
+      location.href = '/user.html';
     }
 
     // Populate units for user registration
     function populateUserUnits() {
       const unitSelect = document.getElementById('user-units');
+      if (!unitSelect) return;
       unitSelect.innerHTML = '';
       const uniqueUnits = [...new Set(rawData.map(d => d.unit))].sort();
       uniqueUnits.forEach(unit => {
@@ -1249,36 +1240,40 @@
     }
 
     // Register user
-    document.getElementById('user-form').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const username = document.getElementById('new-username').value;
-      const password = document.getElementById('new-password').value;
-      const units = Array.from(document.getElementById('user-units').selectedOptions).map(o => o.value);
-      try {
-        const response = await fetch('/api/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password, units })
-        });
-        const result = await response.json();
-        if (result.success) {
-          displayUsers();
-          document.getElementById('user-form').reset();
-        } else {
-          alert('Erro: ' + result.error);
+    const userForm = document.getElementById('user-form');
+    if (userForm) {
+      userForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const username = document.getElementById('new-username').value;
+        const password = document.getElementById('new-password').value;
+        const units = Array.from(document.getElementById('user-units').selectedOptions).map(o => o.value);
+        try {
+          const response = await fetch('/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password, units })
+          });
+          const result = await response.json();
+          if (result.success) {
+            displayUsers();
+            userForm.reset();
+          } else {
+            alert('Erro: ' + result.error);
+          }
+        } catch (err) {
+          console.error('Register error:', err);
+          alert('Erro ao cadastrar usuário');
         }
-      } catch (err) {
-        console.error('Register error:', err);
-        alert('Erro ao cadastrar usuário');
-      }
-    });
+      });
+    }
 
     // Display users
     async function displayUsers() {
+      const userList = document.getElementById('user-list');
+      if (!userList) return;
       try {
         const response = await fetch('/api/users');
         const users = await response.json();
-        const userList = document.getElementById('user-list');
         userList.innerHTML = '';
         users.forEach(user => {
           const li = document.createElement('li');

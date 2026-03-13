@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dentalkids · Gerenciar Usuários</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #eef2f7;
+      --surface: #ffffff;
+      --surface2: #e4edf7;
+      --primary: #0a4f7f;
+      --accent: #00b4d8;
+      --accent2: #48cae4;
+      --green: #2ec4b6;
+      --orange: #f77f00;
+      --purple: #6b21a8;
+      --text: #1a2940;
+      --muted: #6b84a0;
+      --border: #cfdcea;
+      --radius: 14px;
+      --shadow: 0 2px 16px rgba(10, 79, 127, 0.07);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--primary);
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      box-shadow: 0 2px 20px rgba(10, 79, 127, 0.35);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 34px;
+      height: 34px;
+      background: var(--accent);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+    }
+
+    .logo-text {
+      color: #fff;
+      font-family: Arial, sans-serif;
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .logo-sub {
+      color: var(--accent2);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      padding: 9px 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: #0c5f9a;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--primary);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      background: var(--surface2);
+    }
+
+    main {
+      padding: 28px;
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .login-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .login-form {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 40px;
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .login-form h2 {
+      margin-bottom: 20px;
+      color: var(--primary);
+    }
+
+    .login-form input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      font-size: 14px;
+    }
+
+    .login-form button {
+      width: 100%;
+      padding: 12px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .login-form button:hover {
+      background: #0c5f9a;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      margin-top: 18px;
+    }
+
+    .card h1,
+    .card h2 {
+      margin-bottom: 16px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .card p {
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      margin-bottom: 18px;
+    }
+
+    .form-grid label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .form-grid input,
+    .form-grid select {
+      width: 100%;
+      padding: 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 13px;
+      background: var(--surface);
+      outline: none;
+    }
+
+    .user-list {
+      margin-top: 12px;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 10px;
+    }
+
+    .user-list li {
+      background: var(--surface2);
+      border-radius: 12px;
+      padding: 12px 14px;
+      border: 1px solid rgba(203, 213, 225, 0.7);
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .user-list li span {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    @media (max-width: 860px) {
+      main {
+        padding: 18px;
+      }
+
+      header {
+        padding: 0 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="login-container" id="login-container">
+    <div class="login-form">
+      <h2>Login</h2>
+      <input type="text" id="username" placeholder="Usuário" required>
+      <input type="password" id="password" placeholder="Senha" required>
+      <button onclick="login()">Entrar</button>
+      <div id="login-error" style="color: red; margin-top: 10px; display: none;">Usuário ou senha incorretos</div>
+    </div>
+  </div>
+
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🦷</div>
+      <div>
+        <div class="logo-text">Dentalkids</div>
+        <div class="logo-sub">Dashboard de Produção</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+      <button class="btn btn-ghost" onclick="logout()">Sair</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="card">
+      <h1>Gerenciar Usuários</h1>
+      <p>Cadastre novos usuários e defina quais unidades eles podem acessar.</p>
+
+      <div class="form-grid">
+        <div>
+          <label for="new-username">Nome de usuário</label>
+          <input type="text" id="new-username" placeholder="Nome de usuário" required>
+        </div>
+        <div>
+          <label for="new-password">Senha</label>
+          <input type="password" id="new-password" placeholder="Senha" required>
+        </div>
+        <div style="grid-column: 1 / -1;">
+          <label for="user-units">Unidades (segure Ctrl / Cmd para selecionar múltiplas)</label>
+          <select id="user-units" multiple required style="height: 110px;"></select>
+        </div>
+      </div>
+
+      <button class="btn" id="btn-register">Cadastrar usuário</button>
+
+      <div class="card" style="margin-top: 18px;">
+        <h2>Usuários Cadastrados</h2>
+        <ul class="user-list" id="user-list"></ul>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let rawData = [];
+    let currentUser = null;
+
+    const SHEET_ID = '1BDyHqn0J90HPmJiCHHawYS4IxfH8dhe8x5YMQO_EGMI';
+    const SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=0`;
+
+    function norm(s) { return String(s || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[""\"]/g, ''); }
+
+    function parseCSV(text) {
+      const lines = text.trim().split(/\r?\n/);
+      const headers = lines[0].split(',').map(norm);
+      const cm = {};
+      headers.forEach((h, i) => {
+        if (h.includes('period') || h === 'periodo') cm.periodo = i;
+        else if (['dentista', 'dentist', 'profissional'].includes(h)) cm.dentist = i;
+        else if (h.includes('unidade') || h.includes('unit') || h.includes('clinica') || h.includes('filial')) cm.unit = i;
+        else if (h === 'atendimento' || h === 'atendimentos') cm.atend = i;
+        else if (h.includes('producao') && h.includes('hora')) cm.phora = i;
+        else if (h.includes('producao') && h.includes('dia')) cm.pdia = i;
+        else if (h.includes('producao') && h.includes('atend')) cm.pa = i;
+        else if (h === 'producao' || h === 'producao total' || h === 'producao (r$)') cm.prod = i;
+        else if (h.includes('hora') && h.includes('trabalhada')) cm.horas = i;
+        else if (h.includes('especialidade') || h.includes('specialty')) cm.specialty = i;
+      });
+      if (cm.prod === undefined) cm.prod = headers.findIndex(h => h.includes('producao') && !h.includes('/')) || 4;
+      if (cm.horas === undefined) cm.horas = 6;
+
+      rawData = [];
+      for (let i = 1; i < lines.length; i++) {
+        const row = lines[i];
+        if (!row.trim()) continue;
+        const cols = [];
+        let cur = '', inQ = false;
+        for (const ch of row) {
+          if (ch === '"' || ch === '"' || ch === '"') { inQ = !inQ; }
+          else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+          else cur += ch;
+        }
+        cols.push(cur.trim());
+        if (cols.length < 3) continue;
+        const toNum = idx => { if (idx === undefined || idx >= cols.length) return 0; const v = (cols[idx] || '0').replace(/[R$\s.]/g, '').replace(',', '.'); return parseFloat(v) || 0; };
+        const prod = toNum(cm.prod);
+        if (!prod && i > 1) continue;
+        const atend = toNum(cm.atend) || 1;
+        const horas = toNum(cm.horas);
+        const pa = toNum(cm.pa) || Math.round(prod / atend);
+        const phora = toNum(cm.phora) || (horas > 0 ? Math.round(prod / horas) : 0);
+        const pdia = toNum(cm.pdia) || 0;
+        rawData.push({
+          periodo: (cols[cm.periodo] || '').trim(),
+          dentist: (cols[cm.dentist] || '?').trim(),
+          unit: (cols[cm.unit] || '').trim(),
+          atend, prod, pa, horas, phora, pdia,
+          specialty: (cols[cm.specialty] || '').trim()
+        });
+      }
+    }
+
+    async function loadUnitsData() {
+      try {
+        const r = await fetch(SHEET_CSV_URL);
+        if (!r.ok) throw new Error('Erro na rede ou link inválido.');
+        const text = await r.text();
+        if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+          throw new Error('Planilha privada. Ajuste o acesso.');
+        }
+        parseCSV(text);
+        populateUserUnits();
+      } catch (err) {
+        console.error('Erro ao carregar unidades:', err);
+      }
+    }
+
+    function populateUserUnits() {
+      const unitSelect = document.getElementById('user-units');
+      if (!unitSelect) return;
+      unitSelect.innerHTML = '';
+      const uniqueUnits = [...new Set(rawData.map(d => d.unit))].sort();
+      uniqueUnits.forEach(unit => {
+        const option = document.createElement('option');
+        option.value = unit;
+        option.textContent = unit;
+        unitSelect.appendChild(option);
+      });
+    }
+
+    async function displayUsers() {
+      const userList = document.getElementById('user-list');
+      if (!userList) return;
+      try {
+        const response = await fetch('/api/users');
+        const users = await response.json();
+        userList.innerHTML = '';
+        users.forEach(user => {
+          const li = document.createElement('li');
+          li.innerHTML = `<span>${user.username}</span><span>${user.units.join(', ')}</span>`;
+          userList.appendChild(li);
+        });
+      } catch (err) {
+        console.error('Display users error:', err);
+      }
+    }
+
+    async function registerUser() {
+      const username = document.getElementById('new-username').value;
+      const password = document.getElementById('new-password').value;
+      const units = Array.from(document.getElementById('user-units').selectedOptions).map(o => o.value);
+      try {
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password, units })
+        });
+        const result = await response.json();
+        if (result.success) {
+          displayUsers();
+          document.getElementById('new-username').value = '';
+          document.getElementById('new-password').value = '';
+          document.getElementById('user-units').selectedIndex = -1;
+        } else {
+          alert('Erro: ' + result.error);
+        }
+      } catch (err) {
+        console.error('Register error:', err);
+        alert('Erro ao cadastrar usuário');
+      }
+    }
+
+    function checkLogin() {
+      const loggedUser = localStorage.getItem('currentUser');
+      if (!loggedUser) return;
+      currentUser = JSON.parse(loggedUser);
+      if (currentUser.username !== 'admin') {
+        location.href = '/';
+        return;
+      }
+      document.getElementById('login-container').style.display = 'none';
+      loadUnitsData();
+      displayUsers();
+    }
+
+    async function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const result = await response.json();
+        if (result.success) {
+          currentUser = result.user;
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          if (currentUser.username !== 'admin') {
+            location.href = '/';
+            return;
+          }
+          document.getElementById('login-container').style.display = 'none';
+          loadUnitsData();
+          displayUsers();
+        } else {
+          document.getElementById('login-error').style.display = 'block';
+        }
+      } catch (err) {
+        console.error('Login error:', err);
+        document.getElementById('login-error').style.display = 'block';
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('currentUser');
+      location.href = '/';
+    }
+
+    function goBack() {
+      location.href = '/';
+    }
+
+    document.getElementById('btn-register').addEventListener('click', registerUser);
+
+    checkLogin();
+  </script>
+</body>
+
+</html>
