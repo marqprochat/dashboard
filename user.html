@@ -443,6 +443,8 @@
         alert('Erro ao excluir usuário');
       }
     }
+
+    async function changePassword(targetUsername) {
       const newPassword = prompt(`Digite a nova senha para ${targetUsername}:`);
       if (!newPassword) return;
       try {
