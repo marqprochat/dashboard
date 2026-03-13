@@ -959,11 +959,7 @@
           <div class="kpi-val" id="g-horas">—</div>
           <div class="kpi-sub">Total acumulado</div>
         </div>
-        <div class="kpi purple">
-          <div class="kpi-lbl">Dentistas Ativos</div>
-          <div class="kpi-val" id="g-dents">—</div>
-          <div class="kpi-sub">No período</div>
-        </div>
+
         <div class="kpi red">
           <div class="kpi-lbl">Unidades</div>
           <div class="kpi-val" id="g-units">—</div>
@@ -1022,20 +1018,20 @@
       <div class="chart-grid">
         <div class="cc">
           <div class="cc-title">Evolução Mensal da Produção</div>
-          <div class="cc-sub">Clínico vs Ortodontia</div><canvas id="ch-g-mon" height="250"></canvas>
+          <div class="cc-sub">Produção total unificada</div><canvas id="ch-g-mon" height="250"></canvas>
         </div>
         <div class="cc">
           <div class="cc-title">Participação por Especialidade</div>
           <div class="cc-sub">% da produção total</div><canvas id="ch-g-donut" height="250"></canvas>
         </div>
         <div class="cc full">
-          <div class="cc-title">Produção por Unidade</div>
-          <div class="cc-sub">Comparativo entre clínicas</div><canvas id="ch-g-unit" height="160"></canvas>
+          <div class="cc-title">Média Mensal por Unidade</div>
+          <div class="cc-sub">Comparativo de média mensal entre clínicas</div><canvas id="ch-g-unit" height="160"></canvas>
         </div>
       </div>
       <div class="tc">
-        <div class="cc-title">Ranking Geral</div>
-        <div class="cc-sub" style="margin-bottom:14px">Todos os dentistas — ordenado por Prod./Dia</div>
+        <div class="cc-title">Ranking por Unidade</div>
+        <div class="cc-sub" style="margin-bottom:14px">Todas as clínicas — ordenado por Prod./Dia médio</div>
         <div id="tbl-g">
           <div class="empty">
             <div class="ic">📋</div>
@@ -1545,33 +1541,78 @@
       const m = calcM(all), mc = calcM(cli), mo = calcM(ort);
       st('g-prod', fmtK(m.prod)); st('g-paten', fmtK(m.pa)); st('g-phora', fmtK(m.ph)); st('g-pdia', fmtK(m.pd));
       st('g-atend', m.atend.toLocaleString('pt-BR')); st('g-horas', m.horas.toLocaleString('pt-BR') + 'h');
-      st('g-dents', m.dents.length); st('g-units', m.units.filter(Boolean).length);
+      st('g-units', m.units.filter(Boolean).length);
       st('cs-prod', fmtK(mc.prod)); st('cs-pa', fmtK(mc.pa)); st('cs-ph', fmtK(mc.ph)); st('cs-pd', fmtK(mc.pd));
       st('os-prod', fmtK(mo.prod)); st('os-pa', fmtK(mo.pa)); st('os-ph', fmtK(mo.ph)); st('os-pd', fmtK(mo.pd));
 
       const periods = [...new Set(all.map(r => r.periodo))].sort((a, b) => pKey(a).localeCompare(pKey(b)));
-      const bC = {}, bO = {};
-      cli.forEach(r => { bC[r.periodo] = (bC[r.periodo] || 0) + r.prod; });
-      ort.forEach(r => { bO[r.periodo] = (bO[r.periodo] || 0) + r.prod; });
+      const bT = {};
+      all.forEach(r => { bT[r.periodo] = (bT[r.periodo] || 0) + r.prod; });
       dc('g-mon');
       CH['g-mon'] = new Chart(document.getElementById('ch-g-mon'), {
         type: 'bar', data: {
           labels: periods, datasets: [
-            { label: 'Clínico', data: periods.map(p => bC[p] || 0), backgroundColor: 'rgba(10,79,127,0.85)', borderRadius: 5 },
-            { label: 'Ortodontia', data: periods.map(p => bO[p] || 0), backgroundColor: 'rgba(107,33,168,0.75)', borderRadius: 5 }
+            { label: 'Produção Total', data: periods.map(p => bT[p] || 0), backgroundColor: 'rgba(10,79,127,0.85)', borderRadius: 5 }
           ]
-        }, options: { responsive: true, scales: { x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 } } }, y: { stacked: true, grid: { color: '#e8f0f7' }, ticks: { callback: v => 'R$' + v.toLocaleString('pt-BR'), font: { size: 11 } } } }, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12 } }, tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.raw) } } } }
+        }, options: { responsive: true, scales: { x: { grid: { display: false }, ticks: { font: { size: 11 } } }, y: { grid: { color: '#e8f0f7' }, ticks: { callback: v => 'R$' + v.toLocaleString('pt-BR'), font: { size: 11 } } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.raw) } } } }
       });
 
       dc('g-donut');
       CH['g-donut'] = new Chart(document.getElementById('ch-g-donut'), { type: 'doughnut', data: { labels: ['Clínico', 'Ortodontia'], datasets: [{ data: [mc.prod, mo.prod], backgroundColor: ['#0a4f7f', '#6b21a8'], borderWidth: 3, borderColor: '#fff' }] }, options: { responsive: true, cutout: '62%', plugins: { legend: { position: 'bottom', labels: { font: { size: 12 }, padding: 14, boxWidth: 14 } }, tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.raw) } } } } });
 
       const byU = {}; all.forEach(r => { if (r.unit) byU[r.unit] = (byU[r.unit] || 0) + r.prod; });
-      const uS = Object.entries(byU).sort((a, b) => b[1] - a[1]);
+      const nMon = [...new Set(all.map(r => r.periodo))].length || 1;
+      const uS = Object.entries(byU).map(([u, v]) => [u, v / nMon]).sort((a, b) => b[1] - a[1]);
       dc('g-unit');
-      CH['g-unit'] = new Chart(document.getElementById('ch-g-unit'), { type: 'bar', data: { labels: uS.map(e => e[0]), datasets: [{ data: uS.map(e => e[1]), backgroundColor: uS.map((_, i) => ['#0a4f7f', '#00b4d8', '#2ec4b6', '#48cae4', '#90e0ef'][i % 5]), borderRadius: 7, borderSkipped: false }] }, options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.raw) } } }, scales: { x: { grid: { color: '#e8f0f7' }, ticks: { callback: v => 'R$' + v.toLocaleString('pt-BR'), font: { size: 11 } } }, y: { grid: { display: false }, ticks: { font: { size: 11 } } } } } });
+      CH['g-unit'] = new Chart(document.getElementById('ch-g-unit'), { type: 'bar', data: { labels: uS.map(e => e[0]), datasets: [{ data: uS.map(e => e[1]), backgroundColor: uS.map((_, i) => ['#0a4f7f', '#00b4d8', '#2ec4b6', '#48cae4', '#90e0ef'][i % 5]), borderRadius: 7, borderSkipped: false }] }, options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' Média: ' + fmt(ctx.raw) } } }, scales: { x: { grid: { color: '#e8f0f7' }, ticks: { callback: v => 'R$' + v.toLocaleString('pt-BR'), font: { size: 11 } } }, y: { grid: { display: false }, ticks: { font: { size: 11 } } } } } });
 
-      renderTable('tbl-g', all, 'bm-g', true);
+      renderUnitTable('tbl-g', all, 'bm-g');
+    }
+
+    // ─── UNIT TABLE ───────────────────────────────────────────────
+    function renderUnitTable(id, data, bc) {
+      const ds = {};
+      data.forEach(r => {
+        const key = r.unit || 'Sem Unidade';
+        if (!ds[key]) ds[key] = { prod: 0, atend: 0, horas: 0, pdW: 0, dentists: new Set() };
+        ds[key].prod += r.prod;
+        ds[key].atend += r.atend;
+        ds[key].horas += r.horas;
+        ds[key].pdW += r.pdia * r.prod;
+        if (r.dentist) ds[key].dentists.add(r.dentist);
+      });
+      const sorted = Object.entries(ds).sort((a, b) => {
+        const pdA = a[1].prod > 0 ? a[1].pdW / a[1].prod : 0;
+        const pdB = b[1].prod > 0 ? b[1].pdW / b[1].prod : 0;
+        return pdB - pdA;
+      });
+      const max = sorted[0]?.[1].prod || 1;
+      if (!sorted.length) { document.getElementById(id).innerHTML = '<div class="empty"><div class="ic">🔍</div><h3>Sem resultados</h3><p>Ajuste os filtros.</p></div>'; return; }
+      const icons = ['🥇', '🥈', '🥉'];
+      const rows = sorted.map(([name, s], i) => {
+        const pa = s.atend > 0 ? Math.round(s.prod / s.atend) : 0;
+        const ph = s.horas > 0 ? Math.round(s.prod / s.horas) : 0;
+        const pd = s.prod > 0 ? Math.round(s.pdW / s.prod) : 0;
+        const pct = Math.max(4, (s.prod / max * 100).toFixed(0));
+        const rank = i < 3 ? icons[i] : `<span style="font-size:11px;color:var(--muted);font-weight:600">${i + 1}</span>`;
+        return `<tr>
+          <td style="font-size:15px">${rank}</td>
+          <td><strong>${name}</strong></td>
+          <td style="color:var(--muted);font-size:11px">${s.dentists.size} dentistas</td>
+          <td><strong>${fmt(s.prod)}</strong></td>
+          <td>${s.atend.toLocaleString('pt-BR')}</td>
+          <td>${fmt(pa)}</td>
+          <td>${s.horas.toLocaleString('pt-BR')}h</td>
+          <td>${fmt(ph)}</td>
+          <td style="font-weight:700;color:var(--primary)">${fmt(pd)}</td>
+          <td style="width:100px"><div class="bm ${bc}" style="width:${pct}%"></div></td>
+        </tr>`;
+      }).join('');
+      document.getElementById(id).innerHTML = `<table><thead><tr>
+        <th>#</th><th>Unidade</th><th>Equipe</th><th>Produção</th>
+        <th>Atend.</th><th>Prod./Atend.</th><th>Hrs.</th><th>Prod./Hora</th>
+        <th style="color:var(--primary)">Prod./Dia ↓</th><th>Share</th>
+      </tr></thead><tbody>${rows}</tbody></table>`;
     }
 
     // ─── SPECIALTY ────────────────────────────────────────────────
