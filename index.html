@@ -1091,7 +1091,7 @@
         </div>
         <div class="cc full">
           <div class="cc-title">Métricas de Eficiência — Clínico</div>
-          <div class="cc-sub">Prod./Atendimento · Prod./Hora · Prod./Dia por dentista</div><canvas id="ch-c-metrics"
+          <div class="cc-sub">Prod./Atendimento · Prod./Hora por dentista</div><canvas id="ch-c-metrics"
             height="170"></canvas>
         </div>
       </div>
@@ -1151,7 +1151,7 @@
         </div>
         <div class="cc full">
           <div class="cc-title">Métricas de Eficiência — Ortodontia</div>
-          <div class="cc-sub">Prod./Atendimento · Prod./Hora · Prod./Dia por dentista</div><canvas id="ch-o-metrics"
+          <div class="cc-sub">Prod./Atendimento · Prod./Hora por dentista</div><canvas id="ch-o-metrics"
             height="170"></canvas>
         </div>
       </div>
@@ -1572,8 +1572,10 @@
     // ─── UNIT TABLE ───────────────────────────────────────────────
     function renderUnitTable(id, data, bc) {
       const ds = {};
+      const periods = new Set();
       data.forEach(r => {
         const key = r.unit || 'Sem Unidade';
+        periods.add(r.periodo);
         if (!ds[key]) ds[key] = { prod: 0, atend: 0, horas: 0, pdW: 0, dentists: new Set() };
         ds[key].prod += r.prod;
         ds[key].atend += r.atend;
@@ -1581,37 +1583,31 @@
         ds[key].pdW += r.pdia * r.prod;
         if (r.dentist) ds[key].dentists.add(r.dentist);
       });
-      const sorted = Object.entries(ds).sort((a, b) => {
-        const pdA = a[1].prod > 0 ? a[1].pdW / a[1].prod : 0;
-        const pdB = b[1].prod > 0 ? b[1].pdW / b[1].prod : 0;
-        return pdB - pdA;
-      });
+      const sorted = Object.entries(ds).sort((a, b) => b[1].prod - a[1].prod);
+      const nMon = periods.size || 1;
       const max = sorted[0]?.[1].prod || 1;
       if (!sorted.length) { document.getElementById(id).innerHTML = '<div class="empty"><div class="ic">🔍</div><h3>Sem resultados</h3><p>Ajuste os filtros.</p></div>'; return; }
       const icons = ['🥇', '🥈', '🥉'];
       const rows = sorted.map(([name, s], i) => {
         const pa = s.atend > 0 ? Math.round(s.prod / s.atend) : 0;
         const ph = s.horas > 0 ? Math.round(s.prod / s.horas) : 0;
-        const pd = s.prod > 0 ? Math.round(s.pdW / s.prod) : 0;
-        const pct = Math.max(4, (s.prod / max * 100).toFixed(0));
+        const prodMed = s.prod / nMon;
+        const atendMed = s.atend / nMon;
         const rank = i < 3 ? icons[i] : `<span style="font-size:11px;color:var(--muted);font-weight:600">${i + 1}</span>`;
         return `<tr>
           <td style="font-size:15px">${rank}</td>
           <td><strong>${name}</strong></td>
-          <td style="color:var(--muted);font-size:11px">${s.dentists.size} dentistas</td>
-          <td><strong>${fmt(s.prod)}</strong></td>
+          <td><strong>${fmt(prodMed)}</strong></td>
+          <td>${Math.round(atendMed).toLocaleString('pt-BR')}</td>
           <td>${s.atend.toLocaleString('pt-BR')}</td>
           <td>${fmt(pa)}</td>
           <td>${s.horas.toLocaleString('pt-BR')}h</td>
           <td>${fmt(ph)}</td>
-          <td style="font-weight:700;color:var(--primary)">${fmt(pd)}</td>
-          <td style="width:100px"><div class="bm ${bc}" style="width:${pct}%"></div></td>
         </tr>`;
       }).join('');
       document.getElementById(id).innerHTML = `<table><thead><tr>
-        <th>#</th><th>Unidade</th><th>Equipe</th><th>Produção</th>
+        <th>#</th><th>Unidade</th><th>Prod. Méd.</th><th>Atend. Méd.</th>
         <th>Atend.</th><th>Prod./Atend.</th><th>Hrs.</th><th>Prod./Hora</th>
-        <th style="color:var(--primary)">Prod./Dia ↓</th><th>Share</th>
       </tr></thead><tbody>${rows}</tbody></table>`;
     }
 
@@ -1624,7 +1620,7 @@
       const periods = [...new Set(data.map(r => r.periodo))].sort((a, b) => pKey(a).localeCompare(pKey(b)));
       const bP = {}; data.forEach(r => { bP[r.periodo] = (bP[r.periodo] || 0) + r.prod; });
       dc(`${p}-mon`);
-      CH[`${p}-mon`] = new Chart(document.getElementById(`ch-${p}-mon`), { type: 'line', data: { labels: periods, datasets: [{ label: 'Produção', data: periods.map(p => bP[p] || 0), borderColor: c1, backgroundColor: c1 + '18', borderWidth: 2.5, pointBackgroundColor: c1, pointRadius: 5, fill: true, tension: 0.4 }] }, options: { responsive: true, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.raw) } } }, scales: { y: { grid: { color: '#e8f0f7' }, ticks: { callback: v => 'R$' + v.toLocaleString('pt-BR'), font: { size: 11 } } }, x: { grid: { display: false }, ticks: { font: { size: 11 } } } } } });
+      CH[`${p}-mon`] = new Chart(document.getElementById(`ch-${p}-mon`), { type: 'bar', data: { labels: periods, datasets: [{ label: 'Produção', data: periods.map(p => bP[p] || 0), backgroundColor: c1, borderRadius: 5 }] }, options: { responsive: true, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.raw) } } }, scales: { y: { grid: { color: '#e8f0f7' }, ticks: { callback: v => 'R$' + v.toLocaleString('pt-BR'), font: { size: 11 } } }, x: { grid: { display: false }, ticks: { font: { size: 11 } } } } } });
 
       const bD = {}; data.forEach(r => { bD[r.dentist] = (bD[r.dentist] || 0) + r.prod; });
       const sD = Object.entries(bD).sort((a, b) => b[1] - a[1]);
@@ -1645,8 +1641,7 @@
         type: 'bar', data: {
           labels: names, datasets: [
             { label: 'Prod./Atend.', data: names.map(n => ds[n].atend > 0 ? Math.round(ds[n].prod / ds[n].atend) : 0), backgroundColor: c1, borderRadius: 5 },
-            { label: 'Prod./Hora', data: names.map(n => ds[n].horas > 0 ? Math.round(ds[n].prod / ds[n].horas) : 0), backgroundColor: c2, borderRadius: 5 },
-            { label: 'Prod./Dia', data: names.map(n => ds[n].prod > 0 ? Math.round(ds[n].pdW / ds[n].prod) : 0), backgroundColor: c3, borderRadius: 5 }
+            { label: 'Prod./Hora', data: names.map(n => ds[n].horas > 0 ? Math.round(ds[n].prod / ds[n].horas) : 0), backgroundColor: c2, borderRadius: 5 }
           ]
         }, options: { responsive: true, scales: { x: { grid: { display: false }, ticks: { font: { size: 11 } } }, y: { grid: { color: '#e8f0f7' }, ticks: { callback: v => 'R$' + v.toLocaleString('pt-BR'), font: { size: 11 } } } }, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12 } }, tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.raw) } } } }
       });
@@ -1674,28 +1669,24 @@
       const rows = sorted.map(([name, s], i) => {
         const pa = s.atend > 0 ? Math.round(s.prod / s.atend) : 0;
         const ph = s.horas > 0 ? Math.round(s.prod / s.horas) : 0;
-        const pd = s.prod > 0 ? Math.round(s.pdW / s.prod) : 0;
         const pct = Math.max(4, (s.prod / max * 100).toFixed(0));
         const rank = i < 3 ? icons[i] : `<span style="font-size:11px;color:var(--muted);font-weight:600">${i + 1}</span>`;
-        const badge = showSpec ? `<span class="sb ${specOf({ specialty: s.specialty })}" style="margin-left:5px;font-size:10px">${specOf({ specialty: s.specialty }) === 'clinico' ? 'Clínico' : 'Ortod.'}</span>` : '';
         return `<tr>
-      <td style="font-size:15px">${rank}</td>
-      <td><strong>${name}</strong>${badge}</td>
-      <td style="color:var(--muted);font-size:11px">${[...s.units].join(', ') || '—'}</td>
-      <td><strong>${fmt(s.prod)}</strong></td>
-      <td>${s.atend.toLocaleString('pt-BR')}</td>
-      <td>${fmt(pa)}</td>
-      <td>${s.horas.toLocaleString('pt-BR')}h</td>
-      <td>${fmt(ph)}</td>
-      <td style="font-weight:700;color:var(--primary)">${fmt(pd)}</td>
-      <td style="width:100px"><div class="bm ${bc}" style="width:${pct}%"></div></td>
-    </tr>`;
+          <td style="font-size:15px">${rank}</td>
+          <td><strong>${name}</strong></td>
+          <td style="color:var(--muted);font-size:11px">${s.dentists.size} dentistas</td>
+          <td><strong>${fmt(s.prod)}</strong></td>
+          <td>${s.atend.toLocaleString('pt-BR')}</td>
+          <td>${fmt(pa)}</td>
+          <td>${s.horas.toLocaleString('pt-BR')}h</td>
+          <td>${fmt(ph)}</td>
+          <td style="width:100px"><div class="bm ${bc}" style="width:${pct}%"></div></td>
+        </tr>`;
       }).join('');
       document.getElementById(id).innerHTML = `<table><thead><tr>
-    <th>#</th><th>Dentista</th><th>Unidade</th><th>Produção</th>
-    <th>Atend.</th><th>Prod./Atend.</th><th>Hrs.</th><th>Prod./Hora</th>
-    <th style="color:var(--primary)">Prod./Dia ↓</th><th>Share</th>
-  </tr></thead><tbody>${rows}</tbody></table>`;
+        <th>#</th><th>Unidade</th><th>Equipe</th><th>Produção</th>
+        <th>Atend.</th><th>Prod./Atend.</th><th>Hrs.</th><th>Prod./Hora</th><th>Share</th>
+      </tr></thead><tbody>${rows}</tbody></table>`;
     }
     checkLogin();
   </script>
