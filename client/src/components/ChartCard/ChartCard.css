@@ -1,0 +1,19 @@
+.chart-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.chart-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.chart-card-subtitle {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 16px;
+}

@@ -1,0 +1,44 @@
+.filter-bar {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 14px 20px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  margin-bottom: 18px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  animation: fadeIn 0.2s ease;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 110px;
+}
+
+.filter-sep {
+  align-self: center;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0 2px;
+  margin-top: 14px;
+}
+
+.filter-actions {
+  margin-left: auto;
+  align-self: flex-end;
+}
+
+@media (max-width: 860px) {
+  .filter-bar {
+    padding: 12px 14px;
+  }
+
+  .filter-group {
+    min-width: 90px;
+  }
+}

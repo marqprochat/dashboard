@@ -1,0 +1,57 @@
+.kpi-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.kpi-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 14px 14px 0 0;
+}
+
+.kpi-card[data-color="blue"]::after { background: linear-gradient(90deg, #0a4f7f, #00b4d8); }
+.kpi-card[data-color="green"]::after { background: linear-gradient(90deg, #2ec4b6, #80ffdb); }
+.kpi-card[data-color="orange"]::after { background: linear-gradient(90deg, #f77f00, #fcbf49); }
+.kpi-card[data-color="purple"]::after { background: linear-gradient(90deg, #6b21a8, #c084fc); }
+.kpi-card[data-color="teal"]::after { background: linear-gradient(90deg, #0096c7, #48cae4); }
+.kpi-card[data-color="red"]::after { background: linear-gradient(90deg, #dc2626, #fb923c); }
+.kpi-card[data-color="indigo"]::after { background: linear-gradient(90deg, #3730a3, #818cf8); }
+.kpi-card[data-color="rose"]::after { background: linear-gradient(90deg, #be185d, #fb7185); }
+
+.kpi-card-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 7px;
+}
+
+.kpi-card-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+  font-family: Arial, sans-serif;
+  margin-bottom: 3px;
+}
+
+.kpi-card-sub {
+  font-size: 11px;
+  color: var(--muted);
+}

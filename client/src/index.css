@@ -1,0 +1,339 @@
+/* ══════════════════════════════════════════════════════════════
+   DENTALKIDS DASHBOARD — DESIGN SYSTEM
+   ══════════════════════════════════════════════════════════════ */
+
+:root {
+  --bg: #eef2f7;
+  --surface: #ffffff;
+  --surface2: #e4edf7;
+  --primary: #0a4f7f;
+  --primary-hover: #0c5f9a;
+  --accent: #00b4d8;
+  --accent2: #48cae4;
+  --green: #2ec4b6;
+  --orange: #f77f00;
+  --purple: #6b21a8;
+  --text: #1a2940;
+  --muted: #6b84a0;
+  --border: #cfdcea;
+  --radius: 14px;
+  --radius-sm: 9px;
+  --shadow: 0 2px 16px rgba(10, 79, 127, 0.07);
+  --shadow-lg: 0 6px 24px rgba(10, 79, 127, 0.12);
+  --clinico: #0a4f7f;
+  --clinico-lt: #ddeeff;
+  --ortho: #6b21a8;
+  --ortho-lt: #ede9fe;
+  --danger: #dc2626;
+  --danger-lt: #fff5f5;
+  --transition: 0.2s ease;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--surface2);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: none; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s ease;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease;
+}
+
+/* ── BUTTONS ── */
+.btn {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 9px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), transform 0.1s;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn:hover {
+  background: var(--primary-hover);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--primary);
+  border: 1.5px solid var(--border);
+}
+
+.btn-ghost:hover {
+  background: var(--surface2);
+}
+
+.btn-danger {
+  background: var(--danger);
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+}
+
+.btn-sync {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  padding: 11px 24px;
+  font-size: 14px;
+  border-radius: 10px;
+}
+
+.btn-sync:hover {
+  background: linear-gradient(135deg, #0c5f9a, #0096c7);
+}
+
+/* ── FORM ELEMENTS ── */
+input, select {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--surface);
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  width: 100%;
+}
+
+input:focus, select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.12);
+}
+
+input::placeholder {
+  color: var(--muted);
+}
+
+label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* ── BADGES ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.badge-clinico {
+  background: var(--clinico-lt);
+  color: var(--clinico);
+}
+
+.badge-ortho {
+  background: var(--ortho-lt);
+  color: var(--ortho);
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+
+/* ── TABLES ── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+}
+
+thead tr {
+  border-bottom: 2px solid var(--border);
+}
+
+th {
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 7px 10px;
+  white-space: nowrap;
+}
+
+td {
+  padding: 10px;
+  font-size: 12px;
+  border-bottom: 1px solid var(--surface2);
+  white-space: nowrap;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr {
+  transition: background var(--transition);
+}
+
+tbody tr:hover td {
+  background: #f5f9ff;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 860px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+/* ── SPINNER ── */
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.spinner-sm {
+  width: 14px;
+  height: 14px;
+  border-width: 2px;
+}
+
+/* ── SECTION TITLE ── */
+.section-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin: 20px 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align: center;
+  padding: 44px 20px;
+  color: var(--muted);
+}
+
+.empty-state .icon {
+  font-size: 40px;
+  margin-bottom: 8px;
+}
+
+.empty-state h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+
+.empty-state p {
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* ── BAR INDICATORS ── */
+.bar-mini {
+  height: 5px;
+  border-radius: 3px;
+  min-width: 3px;
+}
+
+.bar-general {
+  background: linear-gradient(90deg, var(--accent), var(--green));
+}
+
+.bar-clinico {
+  background: linear-gradient(90deg, var(--clinico), #1d9bd1);
+}
+
+.bar-ortho {
+  background: linear-gradient(90deg, var(--ortho), #c084fc);
+}

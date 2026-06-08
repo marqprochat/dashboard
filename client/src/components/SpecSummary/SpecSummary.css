@@ -1,0 +1,73 @@
+.spec-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.spec-panel {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.spec-panel-head {
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border-bottom: 1px solid var(--border);
+}
+
+.spec-panel-head.clinico {
+  background: var(--clinico-lt);
+}
+
+.spec-panel-head.ortho {
+  background: var(--ortho-lt);
+}
+
+.spec-panel-head h3 {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.spec-panel-head.clinico h3 { color: var(--clinico); }
+.spec-panel-head.ortho h3 { color: var(--ortho); }
+
+.spec-panel-body {
+  padding: 14px 18px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.spec-metric-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  margin-bottom: 2px;
+}
+
+.spec-metric-value {
+  font-size: 17px;
+  font-weight: 800;
+  font-family: Arial, sans-serif;
+}
+
+.spec-metric-value.clinico { color: var(--clinico); }
+.spec-metric-value.ortho { color: var(--ortho); }
+
+@media (max-width: 860px) {
+  .spec-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .spec-panel-body {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

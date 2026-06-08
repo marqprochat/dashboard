@@ -1,31 +1,56 @@
-# Dentalkids Dashboard
+# Dentalkids Dashboard v2.0
 
-Dashboard de Produção para a clínica Dentalkids.
+Dashboard de Produção de alta performance para a clínica Dentalkids, agora reconstruído com **React** e **Node.js**.
 
-## Como executar
+## 🚀 Arquitetura Atualizada
 
-1. Instale as dependências:
-   ```
+- **Frontend**: [React v18](https://react.dev/) + [Vite](https://vitejs.dev/)
+- **Backend**: [Node.js](https://nodejs.org/) + [Express](https://expressjs.com/)
+- **Autenticação**: Stateless com **JWT** (JSON Web Tokens) e segurança via **Bcrypt**
+- **Banco de Dados**: [SQLite](https://www.sqlite.org/) (com suporte para **PostgreSQL** em produção)
+- **Gráficos**: [Chart.js 4](https://www.chartjs.org/)
+
+## 📂 Estrutura do Projeto
+
+- `/client`: Aplicação Frontend (React)
+- `/server`: API Backend (Node.js/Express)
+- `/data`: Diretório onde o banco de dados SQLite (`users.db`) é armazenado
+- `/legacy_backup`: Backup dos arquivos originais do sistema monolítico
+
+## 🛠️ Como Executar
+
+### Desenvolvimento Local
+
+1. Instale as dependências na raiz (inclui client e server):
+   ```bash
    npm install
+   cd client && npm install
+   cd ../server && npm install
    ```
 
-2. Execute o servidor:
+2. Inicie ambos os servidores simultaneamente:
+   ```bash
+   npm run dev
    ```
+   - Frontend: `http://localhost:5173`
+   - Backend: `http://localhost:3001`
+
+### Produção
+
+O sistema está configurado para o **EasyPanel**. O servidor Node.js serve os arquivos estáticos do React automaticamente em produção.
+
+1. Build do Frontend:
+   ```bash
+   npm run build
+   ```
+
+2. Iniciar Servidor:
+   ```bash
    npm start
    ```
 
-3. Abra o navegador em `http://localhost:3000`
+## 🔒 Credenciais Padrão
+- **Usuário**: `admin`
+- **Senha**: `admin`
 
-## Funcionalidades
-
-- Login e gerenciamento de usuários
-- Visualização de dados de produção (carregados do Google Sheets)
-- Gráficos e KPIs
-
-## Usuários
-
-Os usuários são armazenados em um banco de dados. Para produção no EasyPanel, use PostgreSQL configurado na plataforma (DATABASE_URL será fornecida automaticamente). Para desenvolvimento local, usa SQLite (`users.db`).
-
-Para garantir persistência, use um banco de dados gerenciado no EasyPanel.
-
-- Admin padrão: usuário `admin`, senha `admin`
+*Recomenda-se alterar a senha imediatamente após o primeiro login.*
